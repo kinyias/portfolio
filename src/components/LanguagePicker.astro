@@ -1,0 +1,83 @@
+---
+import { languages } from '../i18n/ui';
+import { getLangFromUrl, getCleanPath, type Lang } from '../i18n/utils';
+
+const currentLang = getLangFromUrl(Astro.url);
+const cleanPath = getCleanPath(Astro.url);
+
+function getTargetUrl(lang: Lang): string {
+  if (lang === 'en') {
+    return cleanPath;
+  }
+  return cleanPath === '/' ? '/vi' : `/vi${cleanPath}`;
+}
+---
+
+<nav class="lang-switcher" aria-label="Language selection">
+  {
+    (Object.entries(languages) as [Lang, string][]).map(([lang, label]) => {
+      const isActive = currentLang === lang;
+      return (
+        <a
+          href={getTargetUrl(lang)}
+          class:list={['lang-btn', { active: isActive }]}
+          aria-current={isActive ? 'page' : undefined}
+        >
+          <span class="lang-flag">{lang === 'en' ? '🇬🇧' : '🇻🇳'}</span>
+          <span class="lang-label">{label}</span>
+        </a>
+      );
+    })
+  }
+</nav>
+
+<style>
+  .lang-switcher {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    border-radius: 9999px;
+    padding: 3px;
+    gap: 4px;
+  }
+
+  .lang-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: #94a3b8;
+    border-radius: 9999px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .lang-btn:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .lang-btn.active {
+    background: #3b82f6;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+  }
+
+  .lang-flag {
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  @media (max-width: 640px) {
+    .lang-label {
+      display: none;
+    }
+    .lang-btn {
+      padding: 4px 8px;
+    }
+  }
+</style>
