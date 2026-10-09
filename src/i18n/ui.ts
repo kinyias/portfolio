@@ -18,6 +18,9 @@ export const ui = {
     'hero.viewProjects': 'View Projects',
     'hero.contactMe': 'Contact Me',
     'footer.rights': 'All rights reserved.',
+    'theme.light': 'Light',
+    'theme.dark': 'Dark',
+    'theme.system': 'System',
   },
   vi: {
     'nav.home': 'Trang chủ',
@@ -30,5 +33,8 @@ export const ui = {
     'hero.viewProjects': 'Xem dự án',
     'hero.contactMe': 'Liên hệ với tôi',
     'footer.rights': 'Bảo lưu mọi quyền.',
+    'theme.light': 'Sáng',
+    'theme.dark': 'Tối',
+    'theme.system': 'Hệ thống',
   },
 } as const;

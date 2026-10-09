@@ -78,6 +78,12 @@ const translatePath = useTranslatedPath(lang);
     font-weight: 800;
     letter-spacing: -0.02em;
     margin-bottom: 1rem;
+    background: linear-gradient(180deg, #0f172a 0%, #334155 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  :global(.dark) .title {
     background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -120,18 +126,18 @@ const translatePath = useTranslatedPath(lang);
   }
 
   .btn.secondary {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(148, 163, 184, 0.1);
     border: 1px solid var(--border-color);
     color: var(--text-color);
   }
 
   .btn.secondary:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(148, 163, 184, 0.2);
     transform: translateY(-1px);
   }
 
   .info-card {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 0.75rem;
     padding: 1.25rem;

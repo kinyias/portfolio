@@ -1,5 +1,6 @@
 ---
 import LanguagePicker from '../components/LanguagePicker.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
 import { getLangFromUrl, useTranslations, useTranslatedPath } from '../i18n/utils';
 import '../styles/global.css';
 
@@ -25,6 +26,20 @@ const translatePath = useTranslatedPath(lang);
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <title>{title}</title>
+
+    <!-- Anti-FOUC theme initialization script (chạy đồng bộ chặn hiện sai theme) -->
+    <script is:inline>
+      (function () {
+        const theme = localStorage.getItem('theme') || 'system';
+        const isDark =
+          theme === 'dark' ||
+          (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+        document.documentElement.classList.toggle('dark', isDark);
+        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+      })();
+    </script>
   </head>
   <body>
     <header class="site-header">
@@ -38,6 +53,7 @@ const translatePath = useTranslatedPath(lang);
           <a href={translatePath('/#contact')}>{t('nav.contact')}</a>
         </nav>
         <div class="nav-actions">
+          <ThemeToggle />
           <LanguagePicker />
         </div>
       </div>
@@ -56,25 +72,7 @@ const translatePath = useTranslatedPath(lang);
 </html>
 
 <style is:global>
-  :root {
-    --bg-color: #0b0f19;
-    --text-color: #f1f5f9;
-    --text-muted: #94a3b8;
-    --card-bg: rgba(255, 255, 255, 0.03);
-    --border-color: rgba(255, 255, 255, 0.08);
-    --accent: #3b82f6;
-  }
-
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -86,8 +84,9 @@ const translatePath = useTranslatedPath(lang);
     top: 0;
     z-index: 50;
     backdrop-filter: blur(12px);
-    background: rgba(11, 15, 25, 0.8);
+    background: var(--header-bg);
     border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.25s ease, border-color 0.25s ease;
   }
 
   .header-container {
@@ -106,7 +105,7 @@ const translatePath = useTranslatedPath(lang);
   }
 
   .gradient-text {
-    background: linear-gradient(135deg, #60a5fa, #a855f7);
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -130,6 +129,7 @@ const translatePath = useTranslatedPath(lang);
   .nav-actions {
     display: flex;
     align-items: center;
+    gap: 0.75rem;
   }
 
   .page-content {
@@ -146,6 +146,7 @@ const translatePath = useTranslatedPath(lang);
     text-align: center;
     color: var(--text-muted);
     font-size: 0.875rem;
+    transition: border-color 0.25s ease;
   }
 
   @media (max-width: 640px) {

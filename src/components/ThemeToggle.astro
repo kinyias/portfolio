@@ -1,0 +1,158 @@
+---
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<div class="theme-toggle" role="group" aria-label="Theme selector">
+  <button
+    type="button"
+    class="theme-btn"
+    data-theme-btn="light"
+    title={t('theme.light')}
+    aria-label={t('theme.light')}
+  >
+    <!-- Sun icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="4"></circle>
+      <path d="M12 2v2"></path>
+      <path d="M12 20v2"></path>
+      <path d="m4.93 4.93 1.41 1.41"></path>
+      <path d="m17.66 17.66 1.41 1.41"></path>
+      <path d="M2 12h2"></path>
+      <path d="M20 12h2"></path>
+      <path d="m6.34 17.66-1.41 1.41"></path>
+      <path d="m19.07 4.93-1.41 1.41"></path>
+    </svg>
+  </button>
+
+  <button
+    type="button"
+    class="theme-btn"
+    data-theme-btn="system"
+    title={t('theme.system')}
+    aria-label={t('theme.system')}
+  >
+    <!-- Monitor icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="20" height="14" x="2" y="3" rx="2"></rect>
+      <line x1="8" x2="16" y1="21" y2="21"></line>
+      <line x1="12" x2="12" y1="17" y2="21"></line>
+    </svg>
+  </button>
+
+  <button
+    type="button"
+    class="theme-btn"
+    data-theme-btn="dark"
+    title={t('theme.dark')}
+    aria-label={t('theme.dark')}
+  >
+    <!-- Moon icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+    </svg>
+  </button>
+</div>
+
+<style>
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(148, 163, 184, 0.15);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(8px);
+    border-radius: 9999px;
+    padding: 3px;
+    gap: 2px;
+  }
+
+  .theme-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 9999px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .theme-btn:hover {
+    color: var(--text-color);
+    background: rgba(148, 163, 184, 0.2);
+  }
+
+  .theme-btn.active {
+    background: #3b82f6;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+  }
+</style>
+
+<script>
+  function setupThemeToggle() {
+    const buttons = document.querySelectorAll<HTMLButtonElement>('[data-theme-btn]');
+    if (!buttons.length) return;
+
+    function getSystemTheme(): 'dark' | 'light' {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function updateUI(theme: string) {
+      buttons.forEach((btn) => {
+        const btnTheme = btn.getAttribute('data-theme-btn');
+        const isActive = btnTheme === theme;
+        btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        btn.classList.toggle('active', isActive);
+      });
+    }
+
+    function apply(theme: string) {
+      const isDark = theme === 'dark' || (theme === 'system' && getSystemTheme() === 'dark');
+      document.documentElement.classList.toggle('dark', isDark);
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+      updateUI(theme);
+    }
+
+    // Get current stored theme or default to system
+    const currentTheme = localStorage.getItem('theme') || 'system';
+    updateUI(currentTheme);
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const selected = btn.getAttribute('data-theme-btn') || 'system';
+        localStorage.setItem('theme', selected);
+        apply(selected);
+      });
+    });
+
+    // React to OS system dark mode change
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleSystemChange = () => {
+      const activeTheme = localStorage.getItem('theme') || 'system';
+      if (activeTheme === 'system') {
+        apply('system');
+      }
+    };
+    mediaQuery.addEventListener('change', handleSystemChange);
+
+    // Sync state across multiple open tabs
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'theme') {
+        apply(e.newValue || 'system');
+      }
+    });
+  }
+
+  // Run on initial load
+  setupThemeToggle();
+
+  // Support Astro View Transitions if enabled later
+  document.addEventListener('astro:page-load', setupThemeToggle);
+</script>
