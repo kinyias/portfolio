@@ -1,5 +1,6 @@
 ---
 import { useTranslations, useTranslatedPath, type Lang } from '../i18n/utils';
+import Card3DFlip from './Card3DFlip.astro';
 
 interface Props {
   lang: Lang;
@@ -10,170 +11,133 @@ const t = useTranslations(lang);
 const translatePath = useTranslatedPath(lang);
 ---
 
-<section class="hero">
-  <div class="hero-content">
-    <div class="badge">{t('hero.greeting')}</div>
-    <h1 class="title">
-      {t('hero.title')}
-    </h1>
-    <p class="subtitle">
-      {t('hero.subtitle')}
-    </p>
+<section class="hero-section py-6 sm:py-12 lg:py-16">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+    
+    <!-- Hero Text Column (Editorial Focus) -->
+    <div class="lg:col-span-7 flex flex-col justify-center">
+      
+      <!-- Eyebrow Badge (Status & Persona Identifier) -->
+      <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full text-xs font-mono font-medium tracking-wide bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 w-fit mb-5">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
+        <span class="font-semibold text-slate-900 dark:text-slate-100">{t('hero.handle')}</span>
+        <span class="text-slate-400 dark:text-slate-600">&bull;</span>
+        <span>{t('hero.badge')}</span>
+      </div>
 
-    <div class="actions">
-      <a href={translatePath('/#projects')} class="btn primary">
-        {t('hero.viewProjects')}
-      </a>
-      <a href={translatePath('/#contact')} class="btn secondary">
-        {t('hero.contactMe')}
-      </a>
-    </div>
-  </div>
+      <!-- Main Display Title & Role Hierarchy -->
+      <div class="mb-5">
+        <p class="text-lg sm:text-xl font-semibold tracking-tight text-blue-600 dark:text-blue-400 mb-2">
+          {t('hero.greeting')}
+        </p>
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.12] text-slate-900 dark:text-white">
+          <span class="bg-gradient-to-r from-slate-950 via-slate-800 to-blue-900 dark:from-white dark:via-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
+            {t('hero.rolePrimary')}
+          </span>
+          <br class="hidden sm:inline" />
+          <span class="text-slate-400 dark:text-slate-500 text-3xl sm:text-4xl lg:text-5xl font-light mx-2">&</span>
+          <span class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-300 dark:to-purple-300 bg-clip-text text-transparent">
+            {t('hero.roleSecondary')}
+          </span>
+        </h1>
+      </div>
 
-  <div class="info-card">
-    <div class="card-header">
-      <span class="indicator"></span>
-      <span>Astro i18n Active ({lang.toUpperCase()})</span>
-      <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-        Tailwind v4 Active ⚡
-      </span>
+      <!-- Dual Role Pills (Emphasizes Core Developer vs Content Creator) -->
+      <div class="flex flex-wrap items-center gap-2.5 mb-6">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg text-xs font-mono font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <span>{t('hero.tagDev')}</span>
+        </div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg text-xs font-mono font-medium bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/25">
+          <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+          <span>{t('hero.tagCreator')}</span>
+        </div>
+      </div>
+
+      <!-- Subtitle Description -->
+      <p class="text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-8 max-w-xl text-pretty">
+        {t('hero.subtitle')}
+      </p>
+
+      <!-- Action Buttons (Nested Island Architecture) -->
+      <div class="flex flex-wrap items-center gap-4 mb-10">
+        <a href={translatePath('/#projects')} class="island-cta-primary group">
+          <span class="font-medium tracking-tight text-sm text-white">{t('hero.viewProjects')}</span>
+          <span class="island-cta-icon-wrapper">
+            <span class="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
+          </span>
+        </a>
+
+        <a href={translatePath('/#contact')} class="island-cta-secondary">
+          <span class="font-medium tracking-tight text-sm">{t('hero.contactMe')}</span>
+        </a>
+      </div>
+
     </div>
-    <p class="card-body">
-      {
-        lang === 'en'
-          ? 'Currently browsing in English (default locale at /). Use the switcher at the top right to switch to Vietnamese (/vi).'
-          : 'Hiện đang duyệt bằng Tiếng Việt (locale phụ tại /vi). Bạn có thể bấm nút chuyển ngôn ngữ ở góc trên bên phải để về lại Tiếng Anh (/).'
-      }
-    </p>
+
+    <!-- 3D Card Interactive Showcase Column -->
+    <div class="lg:col-span-5 flex justify-center lg:justify-end">
+      <Card3DFlip
+        frontTag={t('card.frontTag')}
+        backTag={t('card.backTag')}
+      />
+    </div>
+
   </div>
 </section>
 
 <style>
-  .hero {
-    padding: 4rem 0 3rem;
-    display: flex;
-    flex-direction: column;
-    gap: 2.5rem;
-  }
-
-  .hero-content {
-    max-width: 680px;
-  }
-
-  .badge {
-    display: inline-block;
-    padding: 0.35rem 0.85rem;
-    background: rgba(59, 130, 246, 0.1);
-    border: 1px solid rgba(59, 130, 246, 0.25);
-    color: #60a5fa;
-    border-radius: 9999px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    margin-bottom: 1.25rem;
-  }
-
-  .title {
-    font-size: 3rem;
-    line-height: 1.15;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    margin-bottom: 1rem;
-    background: linear-gradient(180deg, #0f172a 0%, #334155 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  :global(.dark) .title {
-    background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .subtitle {
-    font-size: 1.2rem;
-    line-height: 1.6;
-    color: var(--text-muted);
-    margin-bottom: 2rem;
-  }
-
-  .actions {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-
-  .btn {
+  /* Button-in-Button Island Architecture */
+  .island-cta-primary {
     display: inline-flex;
     align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.6rem 0.5rem 1.25rem;
+    border-radius: 9999px;
+    background: #2563eb;
+    box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .island-cta-primary:hover {
+    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px -5px rgba(37, 99, 235, 0.5);
+  }
+
+  .island-cta-icon-wrapper {
+    display: flex;
+    align-items: center;
     justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    font-size: 0.875rem;
+  }
+
+  .island-cta-secondary {
+    display: inline-flex;
+    align-items: center;
     padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
-    font-size: 0.95rem;
-    font-weight: 600;
+    border-radius: 9999px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
     text-decoration: none;
     transition: all 0.2s ease;
   }
 
-  .btn.primary {
-    background: #3b82f6;
-    color: #ffffff;
-    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
-  }
-
-  .btn.primary:hover {
-    background: #2563eb;
+  .island-cta-secondary:hover {
+    background: rgba(148, 163, 184, 0.15);
+    border-color: rgba(148, 163, 184, 0.3);
     transform: translateY(-1px);
-  }
-
-  .btn.secondary {
-    background: rgba(148, 163, 184, 0.1);
-    border: 1px solid var(--border-color);
-    color: var(--text-color);
-  }
-
-  .btn.secondary:hover {
-    background: rgba(148, 163, 184, 0.2);
-    transform: translateY(-1px);
-  }
-
-  .info-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 0.75rem;
-    padding: 1.25rem;
-    max-width: 580px;
-  }
-
-  .card-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #38bdf8;
-    margin-bottom: 0.5rem;
-  }
-
-  .indicator {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #22c55e;
-    box-shadow: 0 0 8px #22c55e;
-  }
-
-  .card-body {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    line-height: 1.5;
-  }
-
-  @media (max-width: 640px) {
-    .title {
-      font-size: 2.25rem;
-    }
-    .subtitle {
-      font-size: 1.05rem;
-    }
   }
 </style>
+

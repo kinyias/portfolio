@@ -1,0 +1,351 @@
+---
+import { Image } from 'astro:assets';
+import cardFrontImg from '../assets/images/card-front.png';
+import cardBackImg from '../assets/images/card-back.png';
+
+interface Props {
+  className?: string;
+  frontTag?: string;
+  backTag?: string;
+  initialFlipped?: boolean;
+}
+
+const {
+  className = '',
+  frontTag = 'DEVELOPER // CREATOR',
+  backTag = 'TECH STACK // UNIVERSE',
+  initialFlipped = false,
+} = Astro.props;
+---
+
+<div
+  class={`card-3d-root relative flex flex-col items-center justify-center ${className}`}
+  data-initial-flipped={initialFlipped ? 'true' : 'false'}
+>
+  <!-- Perspective Container -->
+  <div class="perspective-stage relative py-6">
+    
+    <!-- Floating Anchor: GSAP executes levitation on this element -->
+    <div class="floating-anchor relative cursor-pointer group">
+      
+      <!-- 3D Card Core: GSAP executes 3D tilt and 180deg flip -->
+      <div class="card-3d-core relative w-[290px] sm:w-[330px] md:w-[360px] aspect-[9/16]">
+        
+        <!-- ================= FRONT FACE (Double-Bezel Architecture) ================= -->
+        <div class="card-face card-face-front absolute inset-0">
+          <!-- Outer Shell (Machined Aluminum / Obsidian Frame) -->
+          <div class="double-bezel-outer h-full w-full p-2.5 rounded-[2.5rem] bg-gradient-to-b from-white/15 via-white/5 to-white/10 dark:from-white/12 dark:via-white/5 dark:to-white/10 border border-white/20 dark:border-white/15 backdrop-blur-2xl shadow-[0_20px_50px_-10px_rgba(0,0,0,0.5)]">
+            
+            <!-- Inner Core with concentric mathematical radius calc(2.5rem - 0.625rem) -->
+            <div class="double-bezel-inner relative h-full w-full rounded-[calc(2.5rem-0.625rem)] overflow-hidden bg-slate-950 border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] flex flex-col justify-between">
+              
+              <!-- Artwork Image -->
+              <Image
+                src={cardFrontImg}
+                alt="Card Front - Developer Portrait"
+                width={720}
+                height={1280}
+                quality={90}
+                class="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                loading="eager"
+              />
+
+              <!-- Specular Holographic Glare (moves with 3D tilt) -->
+              <div class="glare-overlay absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-300"></div>
+
+              <!-- Top Vignette & Header Metadata Badge -->
+              <div class="relative z-10 p-4 bg-gradient-to-b from-black/80 via-black/40 to-transparent flex items-center justify-between">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/40 border border-white/15 backdrop-blur-md">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span class="text-[10px] uppercase tracking-[0.2em] font-mono text-white/90 font-medium">
+                    {frontTag}
+                  </span>
+                </div>
+                <div class="w-7 h-7 rounded-full bg-black/40 border border-white/15 backdrop-blur-md flex items-center justify-center text-[11px] font-mono text-white/80">
+                  ✦
+                </div>
+              </div>
+
+              <!-- Bottom Vignette & Island Flip Action Button (Button-in-Button) -->
+              <div class="relative z-10 p-4 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex items-center justify-between">
+                <div class="flex flex-col">
+                  <span class="text-[11px] font-mono tracking-wider text-slate-300 uppercase">Persona ID</span>
+                  <span class="text-sm font-semibold text-white tracking-tight">Kinyias // Core</span>
+                </div>
+
+                <!-- Floating Island Pill Button -->
+                <div class="island-flip-btn inline-flex items-center gap-2 pl-3.5 pr-1.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md transition-all duration-300 shadow-lg group/btn">
+                  <span class="text-[11px] font-mono tracking-wider text-white font-medium uppercase">Flip</span>
+                  <!-- Inner circle icon -->
+                  <div class="w-6 h-6 rounded-full bg-white text-slate-950 flex items-center justify-center text-[10px] font-bold shadow-sm transition-transform duration-500 group-hover/btn:rotate-180">
+                    ↻
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= BACK FACE (3D Universe & Tech Stack) ================= -->
+        <div class="card-face card-face-back absolute inset-0">
+          <!-- Outer Shell with Ambient Cyber Glow -->
+          <div class="double-bezel-outer h-full w-full p-2.5 rounded-[2.5rem] bg-gradient-to-b from-cyan-400/20 via-white/5 to-cyan-500/20 border border-cyan-400/30 backdrop-blur-2xl shadow-[0_20px_50px_-10px_rgba(6,182,212,0.35)]">
+            
+            <!-- Inner Core -->
+            <div class="double-bezel-inner relative h-full w-full rounded-[calc(2.5rem-0.625rem)] overflow-hidden bg-slate-950 border border-cyan-400/20 shadow-[inset_0_1px_1px_rgba(34,211,238,0.25)] flex flex-col justify-between">
+              
+              <!-- Artwork Image -->
+              <Image
+                src={cardBackImg}
+                alt="Card Back - Creative Tech Universe"
+                width={720}
+                height={1280}
+                quality={90}
+                class="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                loading="eager"
+              />
+
+              <!-- Specular Holographic Glare -->
+              <div class="glare-overlay absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-300"></div>
+
+              <!-- Top Vignette & Header Metadata Badge -->
+              <div class="relative z-10 p-4 bg-gradient-to-b from-black/80 via-black/40 to-transparent flex items-center justify-between">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-400/30 backdrop-blur-md">
+                  <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                  <span class="text-[10px] uppercase tracking-[0.2em] font-mono text-cyan-200 font-medium">
+                    {backTag}
+                  </span>
+                </div>
+                <div class="w-7 h-7 rounded-full bg-cyan-950/60 border border-cyan-400/30 backdrop-blur-md flex items-center justify-center text-[11px] font-mono text-cyan-300">
+                  ⚡
+                </div>
+              </div>
+
+              <!-- Bottom Vignette & Island Return Button -->
+              <div class="relative z-10 p-4 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex items-center justify-between">
+                <div class="flex flex-col">
+                  <span class="text-[11px] font-mono tracking-wider text-cyan-300 uppercase">Universe Mode</span>
+                  <span class="text-sm font-semibold text-white tracking-tight">Full-Stack & 3D</span>
+                </div>
+
+                <!-- Floating Island Pill Button -->
+                <div class="island-flip-btn inline-flex items-center gap-2 pl-3.5 pr-1.5 py-1.5 rounded-full bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 backdrop-blur-md transition-all duration-300 shadow-lg group/btn">
+                  <span class="text-[11px] font-mono tracking-wider text-cyan-100 font-medium uppercase">Back</span>
+                  <div class="w-6 h-6 rounded-full bg-cyan-400 text-slate-950 flex items-center justify-center text-[10px] font-bold shadow-sm transition-transform duration-500 group-hover/btn:-rotate-180">
+                    ↺
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Dynamic Ground Contact Shadow (Breathing with levitation) -->
+    <div class="card-ambient-shadow mx-auto -mt-3 w-48 sm:w-56 h-6 rounded-[100%] bg-black/60 dark:bg-cyan-500/15 blur-xl pointer-events-none transition-all duration-700"></div>
+
+    <!-- Micro Instruction Label -->
+    <div class="mt-4 text-center">
+      <span class="inline-flex items-center gap-1.5 text-[11px] font-mono text-slate-400 dark:text-slate-500 tracking-wider">
+        <kbd class="px-1.5 py-0.5 rounded text-[10px] bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-white/10">CLICK</kbd>
+        <span>to flip 3D card</span>
+      </span>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* 3D Hardware Accelerated Staging */
+  .perspective-stage {
+    perspective: 1400px;
+  }
+
+  .floating-anchor {
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+
+  .card-3d-core {
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: box-shadow 0.5s ease;
+  }
+
+  .card-face {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform-style: preserve-3d;
+  }
+
+  .card-face-front {
+    transform: rotateY(0deg) translateZ(1px);
+    z-index: 5;
+  }
+
+  .card-face-back {
+    transform: rotateY(180deg) translateZ(1px);
+    z-index: 1;
+  }
+
+  /* Holographic Sheen */
+  .glare-overlay {
+    background: radial-gradient(
+      circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(255, 255, 255, 0.45) 0%,
+      rgba(255, 255, 255, 0.1) 40%,
+      transparent 70%
+    );
+    mix-blend-mode: overlay;
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+
+  function initFlipCard() {
+    const roots = document.querySelectorAll('.card-3d-root');
+    
+    roots.forEach((root) => {
+      const floatingAnchor = root.querySelector('.floating-anchor') as HTMLElement;
+      const cardCore = root.querySelector('.card-3d-core') as HTMLElement;
+      const ambientShadow = root.querySelector('.card-ambient-shadow') as HTMLElement;
+      if (!floatingAnchor || !cardCore) return;
+
+      const ctx = gsap.context(() => {
+        const frontFace = root.querySelector('.card-face-front') as HTMLElement;
+        const backFace = root.querySelector('.card-face-back') as HTMLElement;
+
+        let isFlipped = (root as HTMLElement).dataset.initialFlipped === 'true';
+        let isHovered = false;
+
+        // Apply initial state if configured to start flipped
+        if (isFlipped) {
+          gsap.set(cardCore, { rotationY: 180 });
+          if (backFace) backFace.style.zIndex = '10';
+          if (frontFace) frontFace.style.zIndex = '1';
+        }
+
+        // 1. GSAP-CORE: Gentle Floating Bobbing Loop (Sine Wave)
+        const floatTween = gsap.to(floatingAnchor, {
+          y: -16,
+          rotationZ: 1,
+          duration: 3,
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut',
+        });
+
+        // Ambient contact shadow breathing in reverse phase
+        const shadowTween = gsap.to(ambientShadow, {
+          scaleX: 0.8,
+          scaleY: 0.8,
+          opacity: 0.35,
+          duration: 3,
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut',
+        });
+
+        // 2. GSAP-CORE: 3D Interactive Parallax Tilt on Pointer Move
+        const onMouseMove = (e: MouseEvent) => {
+          isHovered = true;
+          const rect = floatingAnchor.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+
+          const xPct = (x / rect.width - 0.5) * 2; // -1 to 1
+          const yPct = (y / rect.height - 0.5) * 2; // -1 to 1
+
+          // Update CSS variable for specular glare
+          glares.forEach((glare) => {
+            glare.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
+            glare.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
+            glare.style.opacity = '1';
+          });
+
+          // GSAP smooth tilt interpolation
+          const baseRotationY = isFlipped ? 180 : 0;
+          gsap.to(cardCore, {
+            rotationY: baseRotationY + xPct * 12,
+            rotationX: -yPct * 12,
+            duration: 0.35,
+            ease: 'power1.out',
+            overwrite: 'auto',
+          });
+        };
+
+        const onMouseLeave = () => {
+          isHovered = false;
+          glares.forEach((glare) => {
+            glare.style.opacity = '0';
+          });
+
+          // Reset tilt while preserving flip state
+          gsap.to(cardCore, {
+            rotationX: 0,
+            rotationY: isFlipped ? 180 : 0,
+            duration: 0.7,
+            ease: 'power2.out',
+            overwrite: 'auto',
+          });
+        };
+
+        // 3. GSAP-CORE: 3D Flip Execution on Click with Haptic Pop
+        const performFlip = () => {
+          isFlipped = !isFlipped;
+          const targetY = isFlipped ? 180 : 0;
+
+          // Haptic Pop effect: slight scale up during flip then settle
+          const tl = gsap.timeline({ defaults: { overwrite: 'auto' } });
+
+          tl.to(cardCore, {
+            scale: 1.05,
+            duration: 0.25,
+            ease: 'power1.out',
+          })
+          .to(cardCore, {
+            rotationY: targetY,
+            duration: 0.85,
+            ease: 'power2.inOut',
+            onUpdate: function () {
+              const cur = Math.abs(((gsap.getProperty(cardCore, 'rotationY') as number) || 0) % 360);
+              const isBack = cur > 90 && cur < 270;
+              if (isBack) {
+                if (backFace) backFace.style.zIndex = '10';
+                if (frontFace) frontFace.style.zIndex = '1';
+              } else {
+                if (frontFace) frontFace.style.zIndex = '10';
+                if (backFace) backFace.style.zIndex = '1';
+              }
+            },
+          }, '<')
+          .to(cardCore, {
+            scale: 1,
+            duration: 0.45,
+            ease: 'back.out(1.5)',
+          }, '-=0.25');
+        };
+
+        floatingAnchor.addEventListener('mousemove', onMouseMove);
+        floatingAnchor.addEventListener('mouseleave', onMouseLeave);
+        floatingAnchor.addEventListener('click', performFlip);
+
+      }, root);
+
+      // Astro Lifecycle Cleanup (astro:before-swap)
+      document.addEventListener('astro:before-swap', () => ctx.revert(), { once: true });
+    });
+  }
+
+  // Astro page initialization
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFlipCard);
+  } else {
+    initFlipCard();
+  }
+  document.addEventListener('astro:page-load', initFlipCard);
+</script>
