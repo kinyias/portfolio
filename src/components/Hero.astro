@@ -11,7 +11,7 @@ const t = useTranslations(lang);
 const translatePath = useTranslatedPath(lang);
 ---
 
-<section class="hero-section py-6 sm:py-12 lg:py-16">
+<section class="hero-section py-6 sm:py-12 lg:py-10">
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
     
     <!-- Hero Text Column (Editorial Focus) -->
@@ -43,18 +43,6 @@ const translatePath = useTranslatedPath(lang);
             {t('hero.roleSecondary')}
           </span>
         </h1>
-      </div>
-
-      <!-- Dual Role Pills (Emphasizes Core Developer vs Content Creator) -->
-      <div class="flex flex-wrap items-center gap-2.5 mb-6">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg text-xs font-mono font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-          <span>{t('hero.tagDev')}</span>
-        </div>
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg text-xs font-mono font-medium bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/25">
-          <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
-          <span>{t('hero.tagCreator')}</span>
-        </div>
       </div>
 
       <!-- Subtitle Description -->

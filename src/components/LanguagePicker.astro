@@ -1,83 +1,104 @@
 ---
-import { languages } from '../i18n/ui';
-import { getLangFromUrl, getCleanPath, type Lang } from '../i18n/utils';
+import { getLangFromUrl, getCleanPath, useTranslatedPath, type Lang } from '../i18n/utils';
 
 const currentLang = getLangFromUrl(Astro.url);
 const cleanPath = getCleanPath(Astro.url);
 
-function getTargetUrl(lang: Lang): string {
-  if (lang === 'en') {
-    return cleanPath;
-  }
-  return cleanPath === '/' ? '/vi' : `/vi${cleanPath}`;
-}
+// Ngôn ngữ đích chuyển sang khi bấm (One-Tap Toggle)
+const targetLang: Lang = currentLang === 'en' ? 'vi' : 'en';
+const translatePath = useTranslatedPath(targetLang);
+const targetUrl = translatePath(cleanPath);
+const targetTitle = targetLang === 'en' ? 'Switch to English' : 'Chuyển sang Tiếng Việt';
+
+// Icon hiển thị tương ứng với hành động chuyển đổi:
+// - Đang ở Tiếng Anh -> Hiện icon Ngôi sao Việt Nam (bấm để sang Tiếng Việt)
+// - Đang ở Tiếng Việt -> Hiện icon Quả địa cầu Globe (bấm để sang Tiếng Anh / Quốc tế)
+const isShowingStar = currentLang === 'en';
 ---
 
-<nav class="lang-switcher" aria-label="Language selection">
+<a
+  href={targetUrl}
+  class="lang-icon-toggle"
+  title={targetTitle}
+  aria-label={targetTitle}
+>
   {
-    (Object.entries(languages) as [Lang, string][]).map(([lang, label]) => {
-      const isActive = currentLang === lang;
-      return (
-        <a
-          href={getTargetUrl(lang)}
-          class:list={['lang-btn', { active: isActive }]}
-          aria-current={isActive ? 'page' : undefined}
-        >
-          <span class="lang-flag">{lang === 'en' ? '🇬🇧' : '🇻🇳'}</span>
-          <span class="lang-label">{label}</span>
-        </a>
-      );
-    })
+    isShowingStar ? (
+      <svg
+        class="lang-icon icon-star"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        stroke="currentColor"
+        stroke-width="1"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      </svg>
+    ) : (
+      <svg
+        class="lang-icon icon-globe"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+        <path d="M2 12h20" />
+      </svg>
+    )
   }
-</nav>
+</a>
 
 <style>
-  .lang-switcher {
+  .lang-icon-toggle {
+    position: relative;
     display: inline-flex;
     align-items: center;
-    background: rgba(148, 163, 184, 0.15);
-    border: 1px solid var(--border-color);
-    backdrop-filter: blur(8px);
+    justify-content: center;
+    width: 30px;
+    height: 30px;
     border-radius: 9999px;
-    padding: 3px;
-    gap: 4px;
-  }
-
-  .lang-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 12px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    text-decoration: none;
+    background: transparent;
     color: var(--text-muted);
-    border-radius: 9999px;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    transition: color 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
   }
 
-  .lang-btn:hover {
+  .lang-icon-toggle:hover {
     color: var(--text-color);
-    background: rgba(148, 163, 184, 0.2);
+    background: rgba(148, 163, 184, 0.15);
   }
 
-  .lang-btn.active {
-    background: #3b82f6;
-    color: #ffffff;
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+  .lang-icon-toggle:active {
+    transform: scale(0.92);
   }
 
-  .lang-flag {
-    font-size: 1rem;
-    line-height: 1;
+  .lang-icon {
+    width: 15px;
+    height: 15px;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  @media (max-width: 640px) {
-    .lang-label {
-      display: none;
-    }
-    .lang-btn {
-      padding: 4px 8px;
-    }
+  /* Hiệu ứng xoay nhẹ khi hover */
+  .lang-icon-toggle:hover .lang-icon {
+    transform: rotate(20deg) scale(1.08);
+  }
+
+  /* Điểm nhấn màu sắc tinh tế cho ngôi sao */
+  .icon-star {
+    opacity: 0.88;
+  }
+
+  .lang-icon-toggle:hover .icon-star {
+    opacity: 1;
+    color: #eab308;
   }
 </style>

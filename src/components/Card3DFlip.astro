@@ -2,12 +2,22 @@
 import { Image } from 'astro:assets';
 import cardFrontImg from '../assets/images/card-front.png';
 import cardBackImg from '../assets/images/card-back.png';
+import githubIcon from '../assets/images/social/github-logo-svgrepo-com.svg';
+import linkedinIcon from '../assets/images/social/linkedin-1-svgrepo-com.svg';
+import facebookIcon from '../assets/images/social/facebook-1-svgrepo-com.svg';
+import youtubeIcon from '../assets/images/social/youtube-svgrepo-com.svg';
 
 interface Props {
   className?: string;
   frontTag?: string;
   backTag?: string;
   initialFlipped?: boolean;
+  socialLinks?: {
+    github?: string;
+    linkedin?: string;
+    facebook?: string;
+    youtube?: string;
+  };
 }
 
 const {
@@ -15,7 +25,20 @@ const {
   frontTag = 'DEVELOPER // CREATOR',
   backTag = 'TECH STACK // UNIVERSE',
   initialFlipped = false,
+  socialLinks = {
+    github: 'https://github.com/kinyias',
+    linkedin: 'https://linkedin.com/in/kinyias',
+    facebook: 'https://facebook.com/kinyias',
+    youtube: 'https://youtube.com/@kinyias',
+  },
 } = Astro.props;
+
+const resolvedSocials = {
+  github: socialLinks?.github || 'https://github.com/kinyias',
+  linkedin: socialLinks?.linkedin || 'https://linkedin.com/in/kinyias',
+  facebook: socialLinks?.facebook || 'https://facebook.com/kinyias',
+  youtube: socialLinks?.youtube || 'https://youtube.com/@kinyias',
+};
 ---
 
 <div
@@ -23,7 +46,7 @@ const {
   data-initial-flipped={initialFlipped ? 'true' : 'false'}
 >
   <!-- Perspective Container -->
-  <div class="perspective-stage relative py-6">
+  <div class="perspective-stage relative pt-8 pb-14 sm:pt-10 sm:pb-16 px-4 sm:px-6">
     
     <!-- Floating Anchor: GSAP executes levitation on this element -->
     <div class="floating-anchor relative cursor-pointer group">
@@ -143,6 +166,139 @@ const {
         </div>
 
       </div>
+
+      <!-- ================= SATELLITE FLOATING SOCIAL ICONS (GSAP-POWERED) ================= -->
+      <div class="floating-socials-layer absolute inset-0 pointer-events-none select-none">
+        
+        <!-- 1. GitHub (Top-Left) -->
+        <a
+          href={resolvedSocials.github}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="GitHub Profile (@kinyias)"
+          class="floating-social-item social-github pointer-events-auto absolute -left-3 sm:-left-6 md:-left-8 top-16 sm:top-20 z-20 group/social focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-full"
+        >
+          <!-- Ambient Glow Orb -->
+          <div class="social-glow absolute -inset-1 rounded-full blur-md bg-slate-400/40 dark:bg-white/20 opacity-30 pointer-events-none transition-all duration-300"></div>
+
+          <!-- Dedicated Float Bobbing Element -->
+          <div class="social-float-bob relative w-11 h-11 sm:w-12 sm:h-12">
+            <!-- Glassmorphism Disc Badge -->
+            <div class="social-badge-inner relative w-full h-full rounded-full bg-white/85 dark:bg-[#0c1220]/85 backdrop-blur-xl border border-black/10 dark:border-white/15 shadow-[0_8px_20px_-4px_rgba(0,0,0,0.18)] dark:shadow-[0_10px_25px_-5px_rgba(0,0,0,0.7)] transition-all duration-300 group-hover/social:border-black/25 dark:group-hover/social:border-white/35 p-1.5 overflow-hidden flex items-center justify-center">
+              <Image
+                src={githubIcon}
+                alt="GitHub"
+                width={48}
+                height={48}
+                class="w-full h-full object-contain dark:invert transition-transform duration-300 group-hover/social:scale-110 pointer-events-none"
+              />
+            </div>
+          </div>
+
+          <!-- Micro Tooltip Pill -->
+          <div class="social-tooltip hidden sm:flex absolute right-full mr-2.5 items-center gap-1 px-2.5 py-1 rounded-full bg-slate-950/90 dark:bg-white/95 text-white dark:text-slate-900 text-[10px] font-mono font-medium tracking-wide shadow-lg opacity-0 translate-x-1 pointer-events-none transition-all duration-200 group-hover/social:opacity-100 group-hover/social:translate-x-0 whitespace-nowrap border border-white/10 dark:border-slate-200/20">
+            <span>GitHub</span>
+            <span class="text-slate-400 dark:text-slate-500 font-normal">↗</span>
+          </div>
+        </a>
+
+        <!-- 2. LinkedIn (Top-Right) -->
+        <a
+          href={resolvedSocials.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="LinkedIn Profile"
+          class="floating-social-item social-linkedin pointer-events-auto absolute -right-3 sm:-right-6 md:-right-8 top-32 sm:top-36 z-20 group/social focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-full"
+        >
+          <!-- Ambient Glow Orb -->
+          <div class="social-glow absolute -inset-1 rounded-full blur-md bg-[#0077b5] opacity-30 pointer-events-none transition-all duration-300"></div>
+
+          <!-- Dedicated Float Bobbing Element -->
+          <div class="social-float-bob relative w-11 h-11 sm:w-12 sm:h-12">
+            <!-- Glassmorphism Disc Badge -->
+            <div class="social-badge-inner relative w-full h-full rounded-full bg-white/85 dark:bg-[#0c1220]/85 backdrop-blur-xl border border-black/10 dark:border-white/15 shadow-[0_8px_20px_-4px_rgba(0,0,0,0.18)] dark:shadow-[0_10px_25px_-5px_rgba(0,0,0,0.7)] transition-all duration-300 group-hover/social:border-black/25 dark:group-hover/social:border-white/35 p-1 overflow-hidden flex items-center justify-center">
+              <Image
+                src={linkedinIcon}
+                alt="LinkedIn"
+                width={48}
+                height={48}
+                class="w-full h-full object-contain rounded-sm transition-transform duration-300 group-hover/social:scale-110 pointer-events-none"
+              />
+            </div>
+          </div>
+
+          <!-- Micro Tooltip Pill -->
+          <div class="social-tooltip hidden sm:flex absolute left-full ml-2.5 items-center gap-1 px-2.5 py-1 rounded-full bg-slate-950/90 dark:bg-white/95 text-white dark:text-slate-900 text-[10px] font-mono font-medium tracking-wide shadow-lg opacity-0 -translate-x-1 pointer-events-none transition-all duration-200 group-hover/social:opacity-100 group-hover/social:translate-x-0 whitespace-nowrap border border-white/10 dark:border-slate-200/20">
+            <span>LinkedIn</span>
+            <span class="text-slate-400 dark:text-slate-500 font-normal">↗</span>
+          </div>
+        </a>
+
+        <!-- 3. YouTube (Bottom-Left) -->
+        <a
+          href={resolvedSocials.youtube}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="YouTube Channel"
+          class="floating-social-item social-youtube pointer-events-auto absolute -left-3 sm:-left-6 md:-left-8 bottom-36 sm:bottom-40 z-20 group/social focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded-full"
+        >
+          <!-- Ambient Glow Orb -->
+          <div class="social-glow absolute -inset-1 rounded-full blur-md bg-red-500 opacity-30 pointer-events-none transition-all duration-300"></div>
+
+          <!-- Dedicated Float Bobbing Element -->
+          <div class="social-float-bob relative w-11 h-11 sm:w-12 sm:h-12">
+            <!-- Glassmorphism Disc Badge -->
+            <div class="social-badge-inner relative w-full h-full rounded-full bg-white/85 dark:bg-[#0c1220]/85 backdrop-blur-xl border border-black/10 dark:border-white/15 shadow-[0_8px_20px_-4px_rgba(0,0,0,0.18)] dark:shadow-[0_10px_25px_-5px_rgba(0,0,0,0.7)] transition-all duration-300 group-hover/social:border-black/25 dark:group-hover/social:border-white/35 p-1 overflow-hidden flex items-center justify-center">
+              <Image
+                src={youtubeIcon}
+                alt="YouTube"
+                width={48}
+                height={48}
+                class="w-full h-full object-contain rounded-sm transition-transform duration-300 group-hover/social:scale-110 pointer-events-none"
+              />
+            </div>
+          </div>
+
+          <!-- Micro Tooltip Pill -->
+          <div class="social-tooltip hidden sm:flex absolute right-full mr-2.5 items-center gap-1 px-2.5 py-1 rounded-full bg-slate-950/90 dark:bg-white/95 text-white dark:text-slate-900 text-[10px] font-mono font-medium tracking-wide shadow-lg opacity-0 translate-x-1 pointer-events-none transition-all duration-200 group-hover/social:opacity-100 group-hover/social:translate-x-0 whitespace-nowrap border border-white/10 dark:border-slate-200/20">
+            <span>YouTube</span>
+            <span class="text-slate-400 dark:text-slate-500 font-normal">↗</span>
+          </div>
+        </a>
+
+        <!-- 4. Facebook (Bottom-Right) -->
+        <a
+          href={resolvedSocials.facebook}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Facebook Profile"
+          class="floating-social-item social-facebook pointer-events-auto absolute -right-3 sm:-right-6 md:-right-8 bottom-20 sm:bottom-24 z-20 group/social focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-full"
+        >
+          <!-- Ambient Glow Orb -->
+          <div class="social-glow absolute -inset-1 rounded-full blur-md bg-blue-500 opacity-30 pointer-events-none transition-all duration-300"></div>
+
+          <!-- Dedicated Float Bobbing Element -->
+          <div class="social-float-bob relative w-11 h-11 sm:w-12 sm:h-12">
+            <!-- Glassmorphism Disc Badge -->
+            <div class="social-badge-inner relative w-full h-full rounded-full bg-white/85 dark:bg-[#0c1220]/85 backdrop-blur-xl border border-black/10 dark:border-white/15 shadow-[0_8px_20px_-4px_rgba(0,0,0,0.18)] dark:shadow-[0_10px_25px_-5px_rgba(0,0,0,0.7)] transition-all duration-300 group-hover/social:border-black/25 dark:group-hover/social:border-white/35 p-1 overflow-hidden flex items-center justify-center">
+              <Image
+                src={facebookIcon}
+                alt="Facebook"
+                width={48}
+                height={48}
+                class="w-full h-full object-contain rounded-full transition-transform duration-300 group-hover/social:scale-110 pointer-events-none"
+              />
+            </div>
+          </div>
+
+          <!-- Micro Tooltip Pill -->
+          <div class="social-tooltip hidden sm:flex absolute left-full ml-2.5 items-center gap-1 px-2.5 py-1 rounded-full bg-slate-950/90 dark:bg-white/95 text-white dark:text-slate-900 text-[10px] font-mono font-medium tracking-wide shadow-lg opacity-0 -translate-x-1 pointer-events-none transition-all duration-200 group-hover/social:opacity-100 group-hover/social:translate-x-0 whitespace-nowrap border border-white/10 dark:border-slate-200/20">
+            <span>Facebook</span>
+            <span class="text-slate-400 dark:text-slate-500 font-normal">↗</span>
+          </div>
+        </a>
+
+      </div>
     </div>
 
     <!-- Dynamic Ground Contact Shadow (Breathing with levitation) -->
@@ -173,6 +329,21 @@ const {
     transform-style: preserve-3d;
     will-change: transform;
     transition: box-shadow 0.5s ease;
+  }
+
+  .floating-socials-layer {
+    transform-style: preserve-3d;
+  }
+
+  .floating-social-item {
+    transform-style: preserve-3d;
+    will-change: transform;
+    transform: translateZ(40px);
+  }
+
+  .social-float-bob {
+    transform-style: preserve-3d;
+    will-change: transform;
   }
 
   .card-face {
@@ -210,104 +381,195 @@ const {
     const roots = document.querySelectorAll('.card-3d-root');
     
     roots.forEach((root) => {
-      const floatingAnchor = root.querySelector('.floating-anchor') as HTMLElement;
-      const cardCore = root.querySelector('.card-3d-core') as HTMLElement;
-      const ambientShadow = root.querySelector('.card-ambient-shadow') as HTMLElement;
+      const rootEl = root as HTMLElement;
+      // Guard against duplicate initialization
+      if (rootEl.dataset.initialized === 'true') return;
+      rootEl.dataset.initialized = 'true';
+
+      const floatingAnchor = rootEl.querySelector('.floating-anchor') as HTMLElement;
+      const cardCore = rootEl.querySelector('.card-3d-core') as HTMLElement;
+      const ambientShadow = rootEl.querySelector('.card-ambient-shadow') as HTMLElement;
+      const glares = rootEl.querySelectorAll('.glare-overlay') as NodeListOf<HTMLElement>;
+      const socialItems = rootEl.querySelectorAll('.floating-social-item') as NodeListOf<HTMLElement>;
+      const socialBobs = rootEl.querySelectorAll('.social-float-bob') as NodeListOf<HTMLElement>;
+
       if (!floatingAnchor || !cardCore) return;
 
-      const ctx = gsap.context(() => {
-        const frontFace = root.querySelector('.card-face-front') as HTMLElement;
-        const backFace = root.querySelector('.card-face-back') as HTMLElement;
+      const frontFace = rootEl.querySelector('.card-face-front') as HTMLElement;
+      const backFace = rootEl.querySelector('.card-face-back') as HTMLElement;
 
-        let isFlipped = (root as HTMLElement).dataset.initialFlipped === 'true';
-        let isHovered = false;
+      let isFlipped = rootEl.dataset.initialFlipped === 'true';
 
-        // Apply initial state if configured to start flipped
-        if (isFlipped) {
-          gsap.set(cardCore, { rotationY: 180 });
-          if (backFace) backFace.style.zIndex = '10';
-          if (frontFace) frontFace.style.zIndex = '1';
-        }
+      // Apply initial flip state if configured
+      if (isFlipped) {
+        gsap.set(cardCore, { rotationY: 180 });
+        if (backFace) backFace.style.zIndex = '10';
+        if (frontFace) frontFace.style.zIndex = '1';
+      }
 
-        // 1. GSAP-CORE: Gentle Floating Bobbing Loop (Sine Wave)
-        const floatTween = gsap.to(floatingAnchor, {
-          y: -16,
-          rotationZ: 1,
-          duration: 3,
+      // ================= 1. CARD MAIN LEVITATION (Active & Majestic Sine Wave) =================
+      const cardFloatTween = gsap.to(floatingAnchor, {
+        y: -38,
+        rotationZ: 1.8,
+        duration: 2.8,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+      });
+
+      // Ground contact shadow breathes in reverse phase with card altitude
+      const shadowTween = gsap.to(ambientShadow, {
+        scaleX: 0.55,
+        scaleY: 0.55,
+        opacity: 0.15,
+        duration: 2.8,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+      });
+
+      // ================= 2. SOCIAL SATELLITES INDEPENDENT FLOATING LOOPS =================
+      // Entrance spring pop
+      gsap.from(socialItems, {
+        scale: 0,
+        autoAlpha: 0,
+        y: 20,
+        duration: 0.6,
+        stagger: 0.08,
+        ease: 'back.out(1.8)',
+        delay: 0.1,
+        clearProps: 'scale,autoAlpha',
+      });
+
+      // Dedicated infinite floating physics on inner .social-float-bob (never killed by mouse hover/tilt)
+      const bobConfigs = [
+        { y: -20, x: 8, rotation: 8, duration: 2.5, delay: 0 },    // GitHub
+        { y: 22, x: -9, rotation: -9, duration: 3.0, delay: 0.3 }, // LinkedIn
+        { y: -18, x: 9, rotation: -7, duration: 2.7, delay: 0.6 }, // YouTube
+        { y: 20, x: -8, rotation: 8, duration: 3.2, delay: 0.2 },  // Facebook
+      ];
+
+      socialBobs.forEach((bob, i) => {
+        const cfg = bobConfigs[i] || { y: -16, x: 6, rotation: 6, duration: 2.8, delay: 0 };
+        gsap.to(bob, {
+          y: cfg.y,
+          x: cfg.x,
+          rotation: cfg.rotation,
+          duration: cfg.duration,
           repeat: -1,
           yoyo: true,
           ease: 'sine.inOut',
+          delay: cfg.delay,
+        });
+      });
+
+      // ================= 3. 3D INTERACTIVE TILT & PARALLAX =================
+      const isMobile = window.innerWidth < 768;
+
+      const onMouseMove = (e: MouseEvent) => {
+        const rect = floatingAnchor.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const xPct = (x / rect.width - 0.5) * 2; // -1 to 1
+        const yPct = (y / rect.height - 0.5) * 2; // -1 to 1
+
+        // Specular glare sheen
+        glares.forEach((glare) => {
+          glare.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
+          glare.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
+          glare.style.opacity = '1';
         });
 
-        // Ambient contact shadow breathing in reverse phase
-        const shadowTween = gsap.to(ambientShadow, {
-          scaleX: 0.8,
-          scaleY: 0.8,
-          opacity: 0.35,
-          duration: 3,
-          repeat: -1,
-          yoyo: true,
-          ease: 'sine.inOut',
+        // 3D Card tilt
+        const baseRotationY = isFlipped ? 180 : 0;
+        gsap.to(cardCore, {
+          rotationY: baseRotationY + xPct * (isMobile ? 8 : 14),
+          rotationX: -yPct * (isMobile ? 8 : 14),
+          duration: 0.3,
+          ease: 'power1.out',
+          overwrite: 'auto',
         });
 
-        // 2. GSAP-CORE: 3D Interactive Parallax Tilt on Pointer Move
-        const onMouseMove = (e: MouseEvent) => {
-          isHovered = true;
-          const rect = floatingAnchor.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-
-          const xPct = (x / rect.width - 0.5) * 2; // -1 to 1
-          const yPct = (y / rect.height - 0.5) * 2; // -1 to 1
-
-          // Update CSS variable for specular glare
-          glares.forEach((glare) => {
-            glare.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
-            glare.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
-            glare.style.opacity = '1';
-          });
-
-          // GSAP smooth tilt interpolation
-          const baseRotationY = isFlipped ? 180 : 0;
-          gsap.to(cardCore, {
-            rotationY: baseRotationY + xPct * 12,
-            rotationX: -yPct * 12,
+        // 3D Parallax offset on outer social items
+        const parallaxMultipliers = [20, -18, 16, -20];
+        const zDepths = [60, 70, 55, 65];
+        socialItems.forEach((item, idx) => {
+          const mult = parallaxMultipliers[idx] || 18;
+          const zVal = zDepths[idx] || 60;
+          gsap.to(item, {
+            x: xPct * mult,
+            y: yPct * (mult * 0.7),
+            z: zVal,
             duration: 0.35,
             ease: 'power1.out',
             overwrite: 'auto',
           });
-        };
+        });
+      };
 
-        const onMouseLeave = () => {
-          isHovered = false;
-          glares.forEach((glare) => {
-            glare.style.opacity = '0';
-          });
+      const onMouseLeave = () => {
+        glares.forEach((glare) => {
+          glare.style.opacity = '0';
+        });
 
-          // Reset tilt while preserving flip state
-          gsap.to(cardCore, {
-            rotationX: 0,
-            rotationY: isFlipped ? 180 : 0,
-            duration: 0.7,
+        // Reset card tilt
+        gsap.to(cardCore, {
+          rotationX: 0,
+          rotationY: isFlipped ? 180 : 0,
+          duration: 0.6,
+          ease: 'power2.out',
+          overwrite: 'auto',
+        });
+
+        // Reset social items parallax
+        socialItems.forEach((item) => {
+          gsap.to(item, {
+            x: 0,
+            y: 0,
+            z: 40,
+            duration: 0.6,
             ease: 'power2.out',
             overwrite: 'auto',
           });
-        };
+        });
+      };
 
-        // 3. GSAP-CORE: 3D Flip Execution on Click with Haptic Pop
-        const performFlip = () => {
-          isFlipped = !isFlipped;
-          const targetY = isFlipped ? 180 : 0;
+      // ================= 4. CARD 3D FLIP =================
+      const performFlip = () => {
+        isFlipped = !isFlipped;
+        const targetY = isFlipped ? 180 : 0;
 
-          // Haptic Pop effect: slight scale up during flip then settle
-          const tl = gsap.timeline({ defaults: { overwrite: 'auto' } });
+        const tl = gsap.timeline({ defaults: { overwrite: 'auto' } });
 
-          tl.to(cardCore, {
+        // Satellite impulse pop wave
+        tl.to(
+          socialItems,
+          {
+            scale: 1.18,
+            rotation: '+=15',
+            duration: 0.2,
+            yoyo: true,
+            repeat: 1,
+            stagger: 0.05,
+            ease: 'power2.out',
+          },
+          0
+        );
+
+        // Card flip animation
+        tl.to(
+          cardCore,
+          {
             scale: 1.05,
             duration: 0.25,
             ease: 'power1.out',
-          })
-          .to(cardCore, {
+          },
+          0
+        )
+        .to(
+          cardCore,
+          {
             rotationY: targetY,
             duration: 0.85,
             ease: 'power2.inOut',
@@ -322,26 +584,82 @@ const {
                 if (backFace) backFace.style.zIndex = '1';
               }
             },
-          }, '<')
-          .to(cardCore, {
+          },
+          0
+        )
+        .to(
+          cardCore,
+          {
             scale: 1,
             duration: 0.45,
             ease: 'back.out(1.5)',
-          }, '-=0.25');
-        };
+          },
+          '-=0.25'
+        );
+      };
 
-        floatingAnchor.addEventListener('mousemove', onMouseMove);
-        floatingAnchor.addEventListener('mouseleave', onMouseLeave);
-        floatingAnchor.addEventListener('click', performFlip);
+      floatingAnchor.addEventListener('mousemove', onMouseMove);
+      floatingAnchor.addEventListener('mouseleave', onMouseLeave);
+      floatingAnchor.addEventListener('click', performFlip);
 
-      }, root);
+      // ================= 5. INDIVIDUAL SOCIAL HOVER & CLICK =================
+      socialItems.forEach((item) => {
+        const glow = item.querySelector('.social-glow');
 
-      // Astro Lifecycle Cleanup (astro:before-swap)
-      document.addEventListener('astro:before-swap', () => ctx.revert(), { once: true });
+        item.addEventListener('mouseenter', () => {
+          gsap.to(item, {
+            scale: 1.22,
+            z: 85,
+            duration: 0.3,
+            ease: 'back.out(2)',
+            overwrite: 'auto',
+          });
+          if (glow) {
+            gsap.to(glow, {
+              scale: 1.4,
+              opacity: 0.85,
+              duration: 0.3,
+              ease: 'power2.out',
+            });
+          }
+        });
+
+        item.addEventListener('mouseleave', () => {
+          gsap.to(item, {
+            scale: 1,
+            z: 40,
+            duration: 0.4,
+            ease: 'power2.out',
+            overwrite: 'auto',
+          });
+          if (glow) {
+            gsap.to(glow, {
+              scale: 1,
+              opacity: 0.3,
+              duration: 0.4,
+              ease: 'power2.out',
+            });
+          }
+        });
+
+        // Click on icon opens social page, does not flip card
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+        });
+      });
+
+      // Cleanup on page transitions
+      document.addEventListener('astro:before-swap', () => {
+        rootEl.dataset.initialized = 'false';
+        cardFloatTween.kill();
+        shadowTween.kill();
+        floatingAnchor.removeEventListener('mousemove', onMouseMove);
+        floatingAnchor.removeEventListener('mouseleave', onMouseLeave);
+        floatingAnchor.removeEventListener('click', performFlip);
+      }, { once: true });
     });
   }
 
-  // Astro page initialization
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initFlipCard);
   } else {

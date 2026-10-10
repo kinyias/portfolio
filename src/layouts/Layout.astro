@@ -1,7 +1,7 @@
 ---
 import LanguagePicker from '../components/LanguagePicker.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
-import { getLangFromUrl, useTranslations, useTranslatedPath } from '../i18n/utils';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 import '../styles/global.css';
 
 interface Props {
@@ -13,7 +13,6 @@ const { title = 'Portfolio', description = 'Personal Portfolio Website' } = Astr
 const currentLocale = Astro.currentLocale ?? 'en';
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-const translatePath = useTranslatedPath(lang);
 ---
 
 <!doctype html>
@@ -35,7 +34,7 @@ const translatePath = useTranslatedPath(lang);
       rel="stylesheet"
     />
 
-    <!-- Anti-FOUC theme initialization script (chạy đồng bộ chặn hiện sai theme) -->
+    <!-- Anti-FOUC theme initialization script -->
     <script is:inline>
       (function () {
         const theme = localStorage.getItem('theme') || 'system';
@@ -50,127 +49,25 @@ const translatePath = useTranslatedPath(lang);
     </script>
   </head>
   <body>
-    <!-- Floating Island Glassmorphic Header (High-End Visual Design) -->
-    <header class="floating-header-wrapper fixed top-4 sm:top-6 inset-x-0 z-50 flex justify-center px-4 pointer-events-none">
-      <div class="floating-island-nav pointer-events-auto flex items-center justify-between gap-3 sm:gap-6 px-4 sm:px-6 py-2.5 rounded-full bg-white/70 dark:bg-[#0b0f19]/75 backdrop-blur-2xl border border-black/5 dark:border-white/10 shadow-[0_16px_40px_-10px_rgba(0,0,0,0.12)] dark:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.7)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
-        
-        <!-- Brand / Identity -->
-        <a href={translatePath('/')} class="brand-logo flex items-center gap-2 group text-inherit no-underline">
-          <span class="relative flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-          </span>
-          <span class="gradient-text font-black tracking-tight text-lg sm:text-xl transition-transform duration-300 group-hover:scale-105">kinyias</span>
-          <span class="text-xs font-mono font-medium text-slate-400 dark:text-slate-500 hidden sm:inline">.dev</span>
-        </a>
-
-        <!-- Desktop Navigation Links (Pill architecture) -->
-        <nav class="nav-links hidden md:flex items-center gap-1">
-          <a href={translatePath('/')} class="nav-pill-item">{t('nav.home')}</a>
-          <a href={translatePath('/#projects')} class="nav-pill-item">{t('nav.projects')}</a>
-          <a href={translatePath('/#contact')} class="nav-pill-item">{t('nav.contact')}</a>
-        </nav>
-
-        <!-- Action Tools & Mobile Hamburger Toggle -->
-        <div class="nav-actions flex items-center gap-2 sm:gap-3">
-          <ThemeToggle />
-          <LanguagePicker />
-
-          <!-- Mobile Hamburger Toggle Button -->
-          <button
-            type="button"
-            id="mobile-menu-btn"
-            class="md:hidden flex flex-col justify-center items-center w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 border border-black/5 dark:border-white/10 text-slate-700 dark:text-slate-200 transition-colors focus:outline-none"
-            aria-label="Toggle navigation menu"
-            aria-expanded="false"
-          >
-            <span class="hamburger-line line-1 w-3.5 h-[2px] bg-current rounded-full transition-all duration-300"></span>
-            <span class="hamburger-line line-2 w-3.5 h-[2px] bg-current rounded-full my-1 transition-all duration-300"></span>
-            <span class="hamburger-line line-3 w-3.5 h-[2px] bg-current rounded-full transition-all duration-300"></span>
-          </button>
-        </div>
-
+    <!-- Corner Floating Utility Dock (Minimalist Developer Portfolio Spec) -->
+    <header class="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 pointer-events-none">
+      <div class="corner-dock pointer-events-auto flex items-center gap-1.5 p-1 rounded-full bg-white/75 dark:bg-[#0b0f19]/80 backdrop-blur-2xl border border-black/5 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_35px_rgba(0,0,0,0.6)] transition-all duration-300 hover:shadow-[0_12px_35px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_15px_40px_rgba(0,0,0,0.75)]">
+        <ThemeToggle />
+        <span class="w-[1px] h-3.5 bg-black/10 dark:bg-white/10" aria-hidden="true"></span>
+        <LanguagePicker />
       </div>
     </header>
 
-    <!-- Mobile Fullscreen Glassmorphic Menu Overlay -->
-    <div
-      id="mobile-nav-overlay"
-      class="fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-3xl opacity-0 pointer-events-none transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] flex flex-col justify-center items-center px-6 md:hidden"
-    >
-      <nav class="mobile-nav-links flex flex-col items-center gap-6 text-center">
-        <a href={translatePath('/')} class="mobile-nav-item text-2xl font-bold text-slate-200 hover:text-white transition-all transform translate-y-8 opacity-0 duration-300" style="transition-delay: 50ms">
-          {t('nav.home')}
-        </a>
-        <a href={translatePath('/#projects')} class="mobile-nav-item text-2xl font-bold text-slate-200 hover:text-white transition-all transform translate-y-8 opacity-0 duration-300" style="transition-delay: 100ms">
-          {t('nav.projects')}
-        </a>
-        <a href={translatePath('/#contact')} class="mobile-nav-item text-2xl font-bold text-slate-200 hover:text-white transition-all transform translate-y-8 opacity-0 duration-300" style="transition-delay: 150ms">
-          {t('nav.contact')}
-        </a>
-      </nav>
-    </div>
-
-    <!-- Main Content Staging (Padding adjusted for Floating Header) -->
+    <!-- Main Content Staging -->
     <main class="page-content">
       <slot />
     </main>
 
-    <footer class="site-footer">
+    <footer class="site-footer hidden">
       <div class="footer-container">
         <p>&copy; {new Date().getFullYear()} Thái Tín Khang (kinyias). {t('footer.rights')}</p>
       </div>
     </footer>
-
-    <!-- Header & Mobile Navigation Script -->
-    <script>
-      function setupFloatingHeader() {
-        const headerIsland = document.querySelector('.floating-island-nav');
-        const menuBtn = document.getElementById('mobile-menu-btn');
-        const menuOverlay = document.getElementById('mobile-nav-overlay');
-        const mobileLinks = document.querySelectorAll('.mobile-nav-item');
-
-        // Scroll Elevation effect
-        const handleScroll = () => {
-          if (window.scrollY > 25) {
-            headerIsland?.classList.add('is-scrolled');
-          } else {
-            headerIsland?.classList.remove('is-scrolled');
-          }
-        };
-
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        handleScroll();
-
-        // Hamburger Morph & Overlay Reveal
-        if (menuBtn && menuOverlay) {
-          let isOpen = false;
-
-          const toggleMenu = () => {
-            isOpen = !isOpen;
-            menuBtn.classList.toggle('is-active', isOpen);
-            menuBtn.setAttribute('aria-expanded', String(isOpen));
-            menuOverlay.classList.toggle('is-open', isOpen);
-            document.body.style.overflow = isOpen ? 'hidden' : '';
-          };
-
-          menuBtn.addEventListener('click', toggleMenu);
-
-          mobileLinks.forEach((link) => {
-            link.addEventListener('click', () => {
-              if (isOpen) toggleMenu();
-            });
-          });
-        }
-      }
-
-      document.addEventListener('astro:page-load', setupFloatingHeader);
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', setupFloatingHeader);
-      } else {
-        setupFloatingHeader();
-      }
-    </script>
   </body>
 </html>
 
@@ -183,80 +80,13 @@ const translatePath = useTranslatedPath(lang);
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   }
 
-  /* Floating Island Nav Styling */
-  .floating-island-nav {
-    max-width: 960px;
-    width: 100%;
-  }
-
-  .floating-island-nav.is-scrolled {
-    background: rgba(255, 255, 255, 0.88);
-    box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.2);
-    border-color: rgba(0, 0, 0, 0.1);
-  }
-
-  .dark .floating-island-nav.is-scrolled {
-    background: rgba(11, 15, 25, 0.88);
-    box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.85);
-    border-color: rgba(255, 255, 255, 0.15);
-  }
-
-  .gradient-text {
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  /* Pill Navigation Items */
-  .nav-pill-item {
-    position: relative;
-    padding: 0.35rem 0.9rem;
-    border-radius: 9999px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    text-decoration: none;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .nav-pill-item:hover {
-    color: var(--text-color);
-    background: rgba(148, 163, 184, 0.12);
-    transform: translateY(-1px);
-  }
-
-  /* Hamburger Icon Line Morph */
-  #mobile-menu-btn.is-active .line-1 {
-    transform: translateY(6px) rotate(45deg);
-  }
-
-  #mobile-menu-btn.is-active .line-2 {
-    opacity: 0;
-    transform: scaleX(0);
-  }
-
-  #mobile-menu-btn.is-active .line-3 {
-    transform: translateY(-6px) rotate(-45deg);
-  }
-
-  /* Mobile Fullscreen Glassmorphic Menu Overlay States */
-  #mobile-nav-overlay.is-open {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  #mobile-nav-overlay.is-open .mobile-nav-item {
-    transform: translateY(0);
-    opacity: 1;
-  }
-
-  /* Main Page Content with top clearance for floating header */
+  /* Main Page Content - Clean vertical rhythm without bulky header */
   .page-content {
     flex: 1;
     max-width: 1100px;
     margin: 0 auto;
     width: 100%;
-    padding: 6.5rem 1.5rem 2.5rem;
+    padding: 0rem 1.5rem;
   }
 
   .site-footer {
@@ -270,7 +100,7 @@ const translatePath = useTranslatedPath(lang);
 
   @media (max-width: 640px) {
     .page-content {
-      padding: 5.5rem 1rem 2rem;
+      padding: 3rem 1rem 2rem;
     }
   }
 </style>

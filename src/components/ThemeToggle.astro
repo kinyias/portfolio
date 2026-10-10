@@ -5,154 +5,150 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 ---
 
-<div class="theme-toggle" role="group" aria-label="Theme selector">
-  <button
-    type="button"
-    class="theme-btn"
-    data-theme-btn="light"
-    title={t('theme.light')}
-    aria-label={t('theme.light')}
+<button
+  type="button"
+  id="theme-single-toggle"
+  class="theme-toggle-btn"
+  title={t('theme.light')}
+  aria-label="Toggle theme"
+>
+  <!-- Sun Icon (hiển thị khi Dark mode, click để đổi sang Light) -->
+  <svg
+    class="theme-icon icon-sun"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
   >
-    <!-- Sun icon -->
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="4"></circle>
-      <path d="M12 2v2"></path>
-      <path d="M12 20v2"></path>
-      <path d="m4.93 4.93 1.41 1.41"></path>
-      <path d="m17.66 17.66 1.41 1.41"></path>
-      <path d="M2 12h2"></path>
-      <path d="M20 12h2"></path>
-      <path d="m6.34 17.66-1.41 1.41"></path>
-      <path d="m19.07 4.93-1.41 1.41"></path>
-    </svg>
-  </button>
+    <circle cx="12" cy="12" r="4"></circle>
+    <path d="M12 2v2"></path>
+    <path d="M12 20v2"></path>
+    <path d="m4.93 4.93 1.41 1.41"></path>
+    <path d="m17.66 17.66 1.41 1.41"></path>
+    <path d="M2 12h2"></path>
+    <path d="M20 12h2"></path>
+    <path d="m6.34 17.66-1.41 1.41"></path>
+    <path d="m19.07 4.93-1.41 1.41"></path>
+  </svg>
 
-  <button
-    type="button"
-    class="theme-btn"
-    data-theme-btn="system"
-    title={t('theme.system')}
-    aria-label={t('theme.system')}
+  <!-- Moon Icon (hiển thị khi Light mode, click để đổi sang Dark) -->
+  <svg
+    class="theme-icon icon-moon"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
   >
-    <!-- Monitor icon -->
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect width="20" height="14" x="2" y="3" rx="2"></rect>
-      <line x1="8" x2="16" y1="21" y2="21"></line>
-      <line x1="12" x2="12" y1="17" y2="21"></line>
-    </svg>
-  </button>
-
-  <button
-    type="button"
-    class="theme-btn"
-    data-theme-btn="dark"
-    title={t('theme.dark')}
-    aria-label={t('theme.dark')}
-  >
-    <!-- Moon icon -->
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
-    </svg>
-  </button>
-</div>
+    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+  </svg>
+</button>
 
 <style>
-  .theme-toggle {
-    display: inline-flex;
-    align-items: center;
-    background: rgba(148, 163, 184, 0.15);
-    border: 1px solid var(--border-color);
-    backdrop-filter: blur(8px);
-    border-radius: 9999px;
-    padding: 3px;
-    gap: 2px;
-  }
-
-  .theme-btn {
+  .theme-toggle-btn {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     border-radius: 9999px;
     border: none;
     background: transparent;
     color: var(--text-muted);
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    transition: color 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
   }
 
-  .theme-btn:hover {
+  .theme-toggle-btn:hover {
     color: var(--text-color);
-    background: rgba(148, 163, 184, 0.2);
+    background: rgba(148, 163, 184, 0.15);
   }
 
-  .theme-btn.active {
-    background: #3b82f6;
-    color: #ffffff;
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+  .theme-toggle-btn:active {
+    transform: scale(0.92);
+  }
+
+  .theme-icon {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+  }
+
+  /* Light mode state: Moon visible, Sun hidden */
+  :global(:root:not(.dark)) .icon-sun {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.4);
+    pointer-events: none;
+  }
+
+  :global(:root:not(.dark)) .icon-moon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+
+  /* Dark mode state: Sun visible, Moon hidden */
+  :global(.dark) .icon-sun {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+
+  :global(.dark) .icon-moon {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.4);
+    pointer-events: none;
   }
 </style>
 
 <script>
-  function setupThemeToggle() {
-    const buttons = document.querySelectorAll<HTMLButtonElement>('[data-theme-btn]');
-    if (!buttons.length) return;
+  function setupSingleThemeToggle() {
+    const btn = document.getElementById('theme-single-toggle');
+    if (!btn) return;
 
-    function getSystemTheme(): 'dark' | 'light' {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    function isCurrentDark(): boolean {
+      return document.documentElement.classList.contains('dark');
     }
 
-    function updateUI(theme: string) {
-      buttons.forEach((btn) => {
-        const btnTheme = btn.getAttribute('data-theme-btn');
-        const isActive = btnTheme === theme;
-        btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-        btn.classList.toggle('active', isActive);
-      });
+    function updateAria(isDark: boolean) {
+      btn?.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+      btn?.setAttribute('title', isDark ? 'Switch to light mode' : 'Switch to dark mode');
     }
 
-    function apply(theme: string) {
-      const isDark = theme === 'dark' || (theme === 'system' && getSystemTheme() === 'dark');
-      document.documentElement.classList.toggle('dark', isDark);
-      document.documentElement.setAttribute('data-theme', theme);
-      document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
-      updateUI(theme);
-    }
+    // Khởi tạo label chính xác theo theme hiện hành
+    updateAria(isCurrentDark());
 
-    // Get current stored theme or default to system
-    const currentTheme = localStorage.getItem('theme') || 'system';
-    updateUI(currentTheme);
+    // Single-click toggle action
+    btn.addEventListener('click', () => {
+      const isDark = isCurrentDark();
+      const newTheme = isDark ? 'light' : 'dark';
 
-    buttons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const selected = btn.getAttribute('data-theme-btn') || 'system';
-        localStorage.setItem('theme', selected);
-        apply(selected);
-      });
+      document.documentElement.classList.toggle('dark', !isDark);
+      document.documentElement.setAttribute('data-theme', newTheme);
+      document.documentElement.style.colorScheme = newTheme;
+      localStorage.setItem('theme', newTheme);
+
+      updateAria(!isDark);
     });
 
-    // React to OS system dark mode change
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleSystemChange = () => {
-      const activeTheme = localStorage.getItem('theme') || 'system';
-      if (activeTheme === 'system') {
-        apply('system');
-      }
-    };
-    mediaQuery.addEventListener('change', handleSystemChange);
-
-    // Sync state across multiple open tabs
+    // Đồng bộ storage khi mở nhiều tab
     window.addEventListener('storage', (e) => {
       if (e.key === 'theme') {
-        apply(e.newValue || 'system');
+        const isDark = e.newValue === 'dark';
+        document.documentElement.classList.toggle('dark', isDark);
+        updateAria(isDark);
       }
     });
   }
 
-  // Run on initial load
-  setupThemeToggle();
-
-  // Support Astro View Transitions if enabled later
-  document.addEventListener('astro:page-load', setupThemeToggle);
+  setupSingleThemeToggle();
+  document.addEventListener('astro:page-load', setupSingleThemeToggle);
 </script>
