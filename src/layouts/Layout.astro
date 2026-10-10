@@ -1,16 +1,17 @@
 ---
-import LanguagePicker from '../components/LanguagePicker.astro';
-import ThemeToggle from '../components/ThemeToggle.astro';
-import { getLangFromUrl, useTranslations } from '../i18n/utils';
-import '../styles/global.css';
+import LanguagePicker from "../components/LanguagePicker.astro";
+import ThemeToggle from "../components/ThemeToggle.astro";
+import { getLangFromUrl, useTranslations } from "../i18n/utils";
+import "../styles/global.css";
 
 interface Props {
   title?: string;
   description?: string;
 }
 
-const { title = 'Portfolio', description = 'Personal Portfolio Website' } = Astro.props;
-const currentLocale = Astro.currentLocale ?? 'en';
+const { title = "Portfolio", description = "Personal Portfolio Website" } =
+  Astro.props;
+const currentLocale = Astro.currentLocale ?? "en";
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 ---
@@ -37,23 +38,30 @@ const t = useTranslations(lang);
     <!-- Anti-FOUC theme initialization script -->
     <script is:inline>
       (function () {
-        const theme = localStorage.getItem('theme') || 'system';
+        const theme = localStorage.getItem("theme") || "system";
         const isDark =
-          theme === 'dark' ||
-          (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          theme === "dark" ||
+          (theme === "system" &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches);
 
-        document.documentElement.classList.toggle('dark', isDark);
-        document.documentElement.setAttribute('data-theme', theme);
-        document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+        document.documentElement.classList.toggle("dark", isDark);
+        document.documentElement.setAttribute("data-theme", theme);
+        document.documentElement.style.colorScheme = isDark ? "dark" : "light";
       })();
     </script>
   </head>
   <body>
     <!-- Corner Floating Utility Dock (Minimalist Developer Portfolio Spec) -->
-    <header class="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 pointer-events-none">
-      <div class="corner-dock pointer-events-auto flex items-center gap-1.5 p-1 rounded-full bg-white/75 dark:bg-[#0b0f19]/80 backdrop-blur-2xl border border-black/5 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_35px_rgba(0,0,0,0.6)] transition-all duration-300 hover:shadow-[0_12px_35px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_15px_40px_rgba(0,0,0,0.75)]">
+    <header
+      class="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 pointer-events-none"
+    >
+      <div
+        class="corner-dock pointer-events-auto flex items-center gap-1.5 p-1 rounded-full bg-white/75 dark:bg-[#0b0f19]/80 backdrop-blur-2xl border border-black/5 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_35px_rgba(0,0,0,0.6)] transition-all duration-300 hover:shadow-[0_12px_35px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_15px_40px_rgba(0,0,0,0.75)]"
+      >
         <ThemeToggle />
-        <span class="w-[1px] h-3.5 bg-black/10 dark:bg-white/10" aria-hidden="true"></span>
+        <span
+          class="w-[1px] h-3.5 bg-black/10 dark:bg-white/10"
+          aria-hidden="true"></span>
         <LanguagePicker />
       </div>
     </header>
@@ -65,7 +73,11 @@ const t = useTranslations(lang);
 
     <footer class="site-footer hidden">
       <div class="footer-container">
-        <p>&copy; {new Date().getFullYear()} Thái Tín Khang (kinyias). {t('footer.rights')}</p>
+        <p>
+          &copy; {new Date().getFullYear()} Thái Tín Khang (kinyias). {
+            t("footer.rights")
+          }
+        </p>
       </div>
     </footer>
   </body>
@@ -77,7 +89,11 @@ const t = useTranslations(lang);
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-family:
+      "Plus Jakarta Sans",
+      system-ui,
+      -apple-system,
+      sans-serif;
   }
 
   /* Main Page Content - Clean vertical rhythm without bulky header */

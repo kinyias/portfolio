@@ -1,0 +1,1091 @@
+---
+import { Image } from 'astro:assets';
+import { projectsData, type ProjectItem } from '../data/projects';
+import { useTranslations, useTranslatedPath, type Lang } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+
+// We duplicate the 6 projects to 18 items (3 sets) to give ample runway for seamless modulo wrapping across any screen size
+const slides = [
+  ...projectsData,
+  ...projectsData,
+  ...projectsData,
+];
+---
+
+<div class="jesper-slider-root relative w-full h-screen overflow-hidden bg-[#07090e] text-[#f1f5f9] select-none flex flex-col justify-between" data-jesper-slider>
+  
+  <!-- Subtle Ambient Glow Orbs -->
+  <div class="pointer-events-none absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-blue-600/10 blur-[120px]"></div>
+  <div class="pointer-events-none absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-purple-600/10 blur-[140px]"></div>
+
+  <!-- ================= 1. MINIMALIST TOP HEADER ================= -->
+  <header class="relative z-30 w-full px-5 sm:px-10 pt-5 sm:pt-8 flex items-center justify-between pointer-events-auto">
+    <div class="flex items-center gap-4">
+      <a href={translatePath('/')} class="group inline-flex items-center gap-2 text-xs sm:text-sm font-mono tracking-widest uppercase text-white/70 hover:text-white transition-colors">
+        <span class="inline-block transition-transform duration-300 group-hover:-translate-x-1">←</span>
+        <span>INDEX</span>
+      </a>
+      <span class="text-white/20 hidden sm:inline">/</span>
+      <span class="text-xs font-mono tracking-wider text-white/40 hidden sm:inline">SELECTED WORKS</span>
+    </div>
+  </header>
+
+  <!-- ================= 2. MAIN HORIZONTAL INFINITE SLIDER STAGE ================= -->
+  <main class="slider-stage relative w-full flex-1 flex items-center overflow-hidden cursor-grab active:cursor-grabbing">
+    
+    <!-- Feathered Edge Masking for Cinematic Atmosphere -->
+    <div class="pointer-events-none absolute left-0 inset-y-0 w-16 sm:w-32 md:w-48 bg-gradient-to-r from-[#07090e] via-[#07090e]/80 to-transparent z-20"></div>
+    <div class="pointer-events-none absolute right-0 inset-y-0 w-16 sm:w-32 md:w-48 bg-gradient-to-l from-[#07090e] via-[#07090e]/80 to-transparent z-20"></div>
+
+    <!-- Sliding Track Container -->
+    <div class="slider-track absolute inset-0 will-change-transform">
+      {slides.map((project, idx) => (
+        <article
+          class="slider-item group relative flex-shrink-0 cursor-pointer"
+          data-project-id={project.id}
+          data-real-index={(idx % projectsData.length) + 1}
+        >
+          <!-- Card Tilt / Skew Dynamic Physical Wrapper -->
+          <div class="card-skew-wrapper will-change-transform flex flex-col">
+            
+            <!-- Index Eyebrow & Category Label -->
+            <div class="flex items-baseline justify-between mb-2 sm:mb-3 px-1 text-white/50 font-mono text-xs sm:text-sm">
+              <span class="font-bold text-white/90">0{(idx % projectsData.length) + 1}</span>
+              <span class="text-[11px] sm:text-xs tracking-wider uppercase text-white/40">{project.category}</span>
+            </div>
+
+            <!-- Image Viewport with Inner Parallax Shift -->
+            <div class="card-media-box relative w-[310px] sm:w-[440px] md:w-[520px] lg:w-[560px] aspect-[16/10] rounded-2xl sm:rounded-3xl overflow-hidden bg-slate-900 border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+              
+              <!-- Parallax Image (oversized width for parallax motion) -->
+              <Image
+                src={project.image}
+                alt={project.title}
+                width={900}
+                height={560}
+                quality={85}
+                class="card-img-parallax absolute inset-y-0 -left-[18%] w-[136%] h-full object-cover object-center select-none pointer-events-none will-change-transform transition-scale duration-700 group-hover:scale-105"
+                loading="eager"
+              />
+
+              <!-- Film Grain / Gradient Tone Overlay -->
+              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none"></div>
+
+              <!-- Top Micro Pill (Metrics Telemetry) -->
+              <div class="absolute top-4 right-4 z-10">
+                <span class="px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-mono bg-black/60 backdrop-blur-md text-emerald-400 border border-white/15">
+                  {project.metrics}
+                </span>
+              </div>
+
+              <!-- Hover Specular Sheen -->
+              <div class="card-glare absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-300"></div>
+
+              <!-- Inside Bottom Overlay -->
+              <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6 z-10 flex flex-col justify-end">
+                <h2 class="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-white mb-1 drop-shadow-md group-hover:text-blue-300 transition-colors">
+                  {project.title}
+                </h2>
+                <p class="text-xs sm:text-sm text-slate-300/80 line-clamp-1 font-normal font-sans">
+                  {project.tagline[lang]}
+                </p>
+              </div>
+
+            </div>
+
+            <!-- Card Sub-Footer Info Strip -->
+            <div class="mt-3 px-1 flex items-center justify-between text-xs font-mono text-white/50">
+              <div class="flex items-center gap-2">
+                {project.tags.slice(0, 3).map((tag) => (
+                  <span class="text-[10px] text-white/60 bg-white/[0.05] px-2 py-0.5 rounded border border-white/10">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+              <span class="text-white/40">{project.year}</span>
+            </div>
+
+          </div>
+        </article>
+      ))}
+    </div>
+
+  </main>
+
+  <!-- ================= 3. JESPER LANDBERG BOTTOM HUD ================= -->
+  <footer class="relative z-30 w-full px-5 sm:px-10 pb-5 sm:pb-8 flex flex-col sm:flex-row items-center justify-between gap-4 pointer-events-auto">
+    
+    <!-- Current Slide Counter (01 / 06) -->
+    <div class="flex items-baseline gap-2 font-mono">
+      <span class="hud-current-index text-2xl sm:text-3xl font-bold text-white">01</span>
+      <span class="text-white/30 text-base">/</span>
+      <span class="text-white/40 text-sm">0{projectsData.length}</span>
+    </div>
+
+    <!-- Center Progress Rail & Drag Hint -->
+    <div class="flex flex-col items-center gap-2 w-full max-w-xs sm:max-w-md">
+      <!-- Rail -->
+      <div class="progress-rail relative w-full h-[2px] bg-white/10 rounded-full overflow-hidden">
+        <div class="progress-bar-thumb absolute inset-y-0 left-0 w-16 bg-blue-500 rounded-full will-change-transform shadow-[0_0_8px_rgba(59,130,246,0.8)]"></div>
+      </div>
+      <!-- Interactive Navigation Instruction -->
+      <div class="flex items-center gap-2 text-[10px] sm:text-[11px] font-mono text-white/40 tracking-widest uppercase">
+        <span>DRAG</span>
+        <span>&bull;</span>
+        <span>SCROLL</span>
+        <span>&bull;</span>
+        <span>ARROW KEYS</span>
+      </div>
+    </div>
+
+    <!-- Stepper Buttons [ ← ] [ → ] -->
+    <div class="flex items-center gap-2">
+      <button
+        type="button"
+        class="btn-nav-prev w-9 h-9 rounded-full bg-white/[0.05] hover:bg-white/15 border border-white/10 flex items-center justify-center text-white/80 hover:text-white transition-colors active:scale-95"
+        title="Previous Project"
+        aria-label="Previous Project"
+      >
+        ←
+      </button>
+      <button
+        type="button"
+        class="btn-nav-next w-9 h-9 rounded-full bg-white/[0.05] hover:bg-white/15 border border-white/10 flex items-center justify-center text-white/80 hover:text-white transition-colors active:scale-95"
+        title="Next Project"
+        aria-label="Next Project"
+      >
+        →
+      </button>
+    </div>
+
+  </footer>
+
+  <!-- ================= 4. MAGNETIC CUSTOM CURSOR ================= -->
+  <div class="jesper-cursor hidden md:flex fixed pointer-events-none z-50 items-center justify-center -translate-x-1/2 -translate-y-1/2 will-change-transform transition-opacity duration-300 opacity-0">
+    <!-- Cursor Pill -->
+    <div class="cursor-pill flex items-center justify-center px-3.5 py-1.5 rounded-full bg-white/90 text-[#07090e] border border-black/10 backdrop-blur-md shadow-2xl text-[10px] font-mono font-bold tracking-wider uppercase transition-all duration-300 scale-75">
+      <span class="cursor-text">DRAG</span>
+    </div>
+  </div>
+
+  <!-- ================= 5. JESPER LANDBERG EXPANSIVE CASE STUDY DIALOG ================= -->
+  <div
+    class="project-modal-backdrop fixed inset-0 z-50 bg-black/80 backdrop-blur-xl opacity-0 pointer-events-none transition-opacity duration-300 overflow-hidden items-center justify-center p-3 sm:p-6 lg:p-8 xl:p-12"
+    style="display: none;"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+  >
+    <!-- Spatial Side Peek: Previous Project (Left) -->
+    <button
+      type="button"
+      class="modal-peek-prev hidden xl:flex fixed left-3 xl:left-5 top-1/2 -translate-y-1/2 z-40 flex-col items-center gap-2 p-3 rounded-2xl bg-white/[0.04] hover:bg-white/10 border border-white/10 backdrop-blur-md text-white/50 hover:text-white transition-all cursor-pointer group"
+      aria-label="Previous Project"
+      title="Previous Project"
+    >
+      <span class="text-xs font-mono group-hover:-translate-x-1 transition-transform">←</span>
+      <span class="text-[10px] font-mono tracking-widest uppercase [writing-mode:vertical-rl] rotate-180 modal-peek-prev-title">PREV</span>
+    </button>
+
+    <!-- Spatial Side Peek: Next Project (Right) -->
+    <button
+      type="button"
+      class="modal-peek-next hidden xl:flex fixed right-3 xl:right-5 top-1/2 -translate-y-1/2 z-40 flex-col items-center gap-2 p-3 rounded-2xl bg-white/[0.04] hover:bg-white/10 border border-white/10 backdrop-blur-md text-white/50 hover:text-white transition-all cursor-pointer group"
+      aria-label="Next Project"
+      title="Next Project"
+    >
+      <span class="text-xs font-mono group-hover:translate-x-1 transition-transform">→</span>
+      <span class="text-[10px] font-mono tracking-widest uppercase [writing-mode:vertical-rl] modal-peek-next-title">NEXT</span>
+    </button>
+
+    <!-- Jesper Landberg Framed Floating Sheet Container -->
+    <div class="modal-sheet relative w-full h-full max-w-[1360px] max-h-[92vh] rounded-2xl sm:rounded-3xl lg:rounded-[2rem] bg-[#090c14]/95 border border-white/10 shadow-[0_30px_100px_rgba(0,0,0,0.95)] overflow-hidden flex flex-col lg:flex-row will-change-transform">
+      
+      <!-- Close Button Action (Fixed at top right) -->
+      <button
+        type="button"
+        class="btn-close-modal absolute top-4 right-4 sm:top-6 sm:right-6 z-50 inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white/10 hover:bg-white text-white hover:text-black border border-white/15 text-xs font-mono font-medium tracking-wider transition-all duration-200 active:scale-95 shadow-lg backdrop-blur-md"
+        aria-label="Close Case Study"
+      >
+        <span>CLOSE</span>
+        <span class="text-sm font-bold">✕</span>
+        <kbd class="hidden sm:inline text-[9px] px-1 py-0.5 rounded bg-black/30 group-hover:bg-black/10">ESC</kbd>
+      </button>
+
+      <!-- ================= LEFT COLUMN: STICKY IDENTITY PANEL (Desktop) ================= -->
+      <div class="modal-left-panel hidden lg:flex w-[42%] xl:w-[40%] flex-shrink-0 flex-col justify-between p-8 sm:p-10 xl:p-12 border-r border-white/10 bg-[#090c14]/80 z-20">
+        
+        <!-- Top Section -->
+        <div>
+          <!-- Index Number & Category Pill -->
+          <div class="flex items-center gap-3 font-mono text-xs sm:text-sm mb-5 text-white/50">
+            <span class="modal-header-num font-bold text-blue-400">PROJECT 01</span>
+            <span class="text-white/20">/</span>
+            <span class="modal-header-cat uppercase tracking-wider text-white/60">DEVELOPER PLATFORM</span>
+          </div>
+
+          <!-- Big Architectural Title -->
+          <h1 class="modal-title text-3xl sm:text-4xl xl:text-5xl font-extrabold tracking-tight text-white mb-4 leading-[1.08]">
+            <!-- Dynamic Title -->
+          </h1>
+
+          <!-- Tagline -->
+          <p class="modal-tagline text-base xl:text-lg text-slate-300 font-light leading-relaxed mb-4">
+            <!-- Dynamic Tagline -->
+          </p>
+
+          <!-- Description -->
+          <p class="modal-description text-xs sm:text-sm text-slate-400 leading-relaxed font-sans">
+            <!-- Dynamic Description -->
+          </p>
+        </div>
+
+        <!-- Middle Section: Actions & Tags -->
+        <div class="space-y-4 my-4">
+          <!-- Action Link Buttons -->
+          <div class="flex flex-wrap items-center gap-3">
+            <a
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="modal-demo-link inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-black hover:bg-slate-200 text-xs font-mono font-bold tracking-wide shadow-md transition-all active:scale-95"
+            >
+              <span>LIVE DEMO</span>
+              <span>↗</span>
+            </a>
+            <a
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="modal-code-link inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-mono border border-white/15 backdrop-blur-md transition-colors"
+            >
+              <span>GITHUB</span>
+              <span>⌥</span>
+            </a>
+          </div>
+
+          <!-- Metrics Telemetry Badge -->
+          <div class="flex items-center gap-2">
+            <span class="modal-metrics px-3 py-1.5 rounded-full text-xs font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm">
+              <!-- Dynamic Metrics -->
+            </span>
+          </div>
+
+          <!-- Tech Stack Badges -->
+          <div>
+            <span class="text-[10px] font-mono uppercase tracking-widest text-white/40 block mb-2">TECH STACK</span>
+            <div class="modal-tags flex flex-wrap gap-1.5"></div>
+          </div>
+        </div>
+
+        <!-- Bottom Section: Telemetry & Depth -->
+        <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-white/40">
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>60 FPS • PRODUCTION</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-white/30">DEPTH</span>
+            <span class="modal-depth-percent font-bold text-white/80">00%</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ================= RIGHT COLUMN: SMOOTH MOMENTUM SCROLL VIEWPORT ================= -->
+      <div class="modal-viewport relative w-full lg:w-[58%] xl:w-[60%] flex-1 h-full overflow-hidden">
+        
+        <!-- Depth Progress Rail (Right Edge) -->
+        <div class="modal-reading-rail hidden sm:flex absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 z-30 flex-col items-center gap-2 pointer-events-none">
+          <div class="w-[2px] h-36 bg-white/10 rounded-full relative overflow-hidden">
+            <div class="modal-progress-thumb absolute top-0 inset-x-0 h-8 bg-blue-500 rounded-full shadow-[0_0_12px_rgba(59,130,246,0.9)] will-change-transform"></div>
+          </div>
+        </div>
+
+        <!-- Virtual Scrolling Track -->
+        <div class="modal-scroll-track will-change-transform w-full h-auto p-6 sm:p-10 lg:p-12 space-y-8 sm:space-y-10">
+          
+          <!-- Mobile Header (Visible only on < lg screens) -->
+          <div class="modal-mobile-header lg:hidden space-y-4 pb-6 border-b border-white/10">
+            <div class="flex items-center gap-3 font-mono text-xs text-white/50">
+              <span class="modal-mobile-header-num font-bold text-blue-400">PROJECT 01</span>
+              <span class="text-white/20">/</span>
+              <span class="modal-mobile-header-cat uppercase tracking-wider text-white/60">DEVELOPER PLATFORM</span>
+            </div>
+
+            <h1 class="modal-mobile-title text-2xl sm:text-3xl font-extrabold tracking-tight text-white"></h1>
+            <p class="modal-mobile-tagline text-sm text-slate-300 font-light leading-relaxed"></p>
+            <p class="modal-mobile-description text-xs text-slate-400 leading-relaxed font-sans"></p>
+
+            <div class="flex flex-wrap items-center gap-3 pt-2">
+              <a href="#" target="_blank" rel="noopener noreferrer" class="modal-mobile-demo-link px-4 py-2 rounded-full bg-white text-black text-xs font-mono font-bold">
+                LIVE DEMO ↗
+              </a>
+              <a href="#" target="_blank" rel="noopener noreferrer" class="modal-mobile-code-link px-3.5 py-2 rounded-full bg-white/10 text-white text-xs font-mono border border-white/15">
+                GITHUB ⌥
+              </a>
+              <span class="modal-mobile-metrics px-3 py-1.5 rounded-full text-[11px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20"></span>
+            </div>
+
+            <div class="modal-mobile-tags flex flex-wrap gap-1.5 pt-1"></div>
+          </div>
+
+          <!-- 1. Primary Showcase Media Card with Inner Parallax -->
+          <div class="modal-hero-media relative w-full aspect-[16/10] rounded-2xl sm:rounded-3xl overflow-hidden border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.7)] bg-slate-900 group">
+            <img class="modal-image w-full h-full object-cover will-change-transform scale-105" src="" alt="Project Showcase" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none"></div>
+            
+            <div class="absolute top-4 left-4 z-10">
+              <span class="px-3 py-1 rounded-full text-[10px] font-mono bg-black/60 backdrop-blur-md text-white/80 border border-white/15">
+                PRIMARY SHOWCASE
+              </span>
+            </div>
+
+            <div class="absolute bottom-4 left-4 right-4 z-10 flex items-center justify-between">
+              <span class="modal-hero-caption text-xs font-mono text-white/60">HIGH-RESOLUTION RENDER</span>
+              <span class="text-[10px] font-mono text-white/40 uppercase">INTERACTIVE VIEWPORT</span>
+            </div>
+          </div>
+
+          <!-- 2. System Highlights & Architectural Innovations -->
+          <div class="p-6 sm:p-8 rounded-2xl sm:rounded-3xl bg-white/[0.02] border border-white/10">
+            <h3 class="text-xs font-mono uppercase tracking-widest text-blue-400 mb-6 flex items-center gap-2">
+              <span>✦</span>
+              <span>SYSTEM HIGHLIGHTS & ARCHITECTURAL INNOVATIONS</span>
+            </h3>
+            <ul class="modal-highlights space-y-4 text-sm sm:text-base text-slate-200"></ul>
+          </div>
+
+          <!-- 3. Technical Specifications Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="p-5 rounded-2xl bg-white/[0.02] border border-white/10">
+              <span class="text-[10px] font-mono text-white/40 uppercase tracking-widest block mb-1">RUNTIME ENGINE</span>
+              <span class="text-sm sm:text-base font-mono font-bold text-white">ASTRO + GSAP SCROLLTRIGGER</span>
+            </div>
+            <div class="p-5 rounded-2xl bg-white/[0.02] border border-white/10">
+              <span class="text-[10px] font-mono text-white/40 uppercase tracking-widest block mb-1">HARDWARE ACCELERATION</span>
+              <span class="text-sm sm:text-base font-mono font-bold text-emerald-400">GPU LAYER COMPOSITING</span>
+            </div>
+          </div>
+
+          <!-- 4. Next Project Jumper / Pull-Up Teaser -->
+          <div class="modal-next-project p-6 sm:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-blue-900/20 via-white/[0.02] to-transparent border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 cursor-pointer group hover:border-blue-500/40 transition-colors">
+            <div>
+              <span class="text-[10px] font-mono uppercase tracking-widest text-blue-400 block mb-1">CONTINUE EXPLORING</span>
+              <h4 class="modal-next-title text-xl sm:text-2xl font-bold text-white group-hover:text-blue-300 transition-colors"></h4>
+            </div>
+            <button type="button" class="btn-jump-next px-5 py-2.5 rounded-full bg-white text-black text-xs font-mono font-semibold tracking-wider group-hover:scale-105 transition-transform pointer-events-none">
+              NEXT CASE STUDY →
+            </button>
+          </div>
+
+          <!-- Bottom Overscroll Breathing Room -->
+          <div class="h-8 w-full"></div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Data store embedded for instant modal rendering -->
+<script is:inline id="projects-jesper-data" type="application/json" set:html={JSON.stringify(projectsData)}></script>
+
+<style>
+  /* Hardware Accelerated Stage */
+  .slider-stage {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    overflow: hidden;
+    touch-action: pan-y;
+  }
+
+  .slider-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .slider-item {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-style: preserve-3d;
+  }
+
+  .card-skew-wrapper {
+    transform-style: preserve-3d;
+    transition: filter 0.3s ease;
+  }
+
+  /* Specular sheen over cards on 3D hover */
+  .card-glare {
+    background: radial-gradient(
+      circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0.08) 45%,
+      transparent 70%
+    );
+    mix-blend-mode: overlay;
+  }
+</style>
+
+<!-- ================= JESPER LANDBERG LERP ENGINE SCRIPT ================= -->
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initJesperSlider() {
+    const root = document.querySelector('[data-jesper-slider]') as HTMLElement;
+    if (!root || root.dataset.initialized === 'true') return;
+    root.dataset.initialized = 'true';
+
+    const rawDataScript = document.getElementById('projects-jesper-data');
+    const allProjects = rawDataScript ? JSON.parse(rawDataScript.textContent || '[]') : [];
+
+    const stage = root.querySelector('.slider-stage') as HTMLElement;
+    const track = root.querySelector('.slider-track') as HTMLElement;
+    const items = root.querySelectorAll('.slider-item') as NodeListOf<HTMLElement>;
+    const cursor = root.querySelector('.jesper-cursor') as HTMLElement;
+    const cursorText = root.querySelector('.cursor-text') as HTMLElement;
+    const cursorPill = root.querySelector('.cursor-pill') as HTMLElement;
+
+    // HUD Elements
+    const hudCurrentIndex = root.querySelector('.hud-current-index') as HTMLElement;
+    const progressThumb = root.querySelector('.progress-bar-thumb') as HTMLElement;
+    const btnPrev = root.querySelector('.btn-nav-prev') as HTMLButtonElement;
+    const btnNext = root.querySelector('.btn-nav-next') as HTMLButtonElement;
+
+    // Modal Elements (Expansive Jesper Landberg Framed Sheet)
+    const modalBackdrop = root.querySelector('.project-modal-backdrop') as HTMLElement;
+    const modalSheet = root.querySelector('.modal-sheet') as HTMLElement;
+    const modalLeftPanel = root.querySelector('.modal-left-panel') as HTMLElement;
+    const modalViewport = root.querySelector('.modal-viewport') as HTMLElement;
+    const modalScrollTrack = root.querySelector('.modal-scroll-track') as HTMLElement;
+    const modalProgressThumb = root.querySelector('.modal-progress-thumb') as HTMLElement;
+    const modalDepthPercent = root.querySelector('.modal-depth-percent') as HTMLElement;
+    const modalHeroImg = root.querySelector('.modal-hero-media img') as HTMLImageElement;
+    const btnCloseModal = root.querySelector('.btn-close-modal') as HTMLButtonElement;
+    const modalNextBox = root.querySelector('.modal-next-project') as HTMLElement;
+    const modalNextTitle = root.querySelector('.modal-next-title') as HTMLElement;
+
+    // Spatial Side Peeks
+    const modalPeekPrev = root.querySelector('.modal-peek-prev') as HTMLElement;
+    const modalPeekNext = root.querySelector('.modal-peek-next') as HTMLElement;
+    const modalPeekPrevTitle = root.querySelector('.modal-peek-prev-title') as HTMLElement;
+    const modalPeekNextTitle = root.querySelector('.modal-peek-next-title') as HTMLElement;
+
+    // Desktop Left Panel Content Targets
+    const modalHeaderNum = root.querySelector('.modal-header-num') as HTMLElement;
+    const modalHeaderCat = root.querySelector('.modal-header-cat') as HTMLElement;
+    const modalTitle = root.querySelector('.modal-title') as HTMLElement;
+    const modalTagline = root.querySelector('.modal-tagline') as HTMLElement;
+    const modalDescription = root.querySelector('.modal-description') as HTMLElement;
+    const modalDemoLink = root.querySelector('.modal-demo-link') as HTMLAnchorElement;
+    const modalCodeLink = root.querySelector('.modal-code-link') as HTMLAnchorElement;
+    const modalMetrics = root.querySelector('.modal-metrics') as HTMLElement;
+    const modalTags = root.querySelector('.modal-tags') as HTMLElement;
+    const modalHighlights = root.querySelector('.modal-highlights') as HTMLElement;
+
+    // Mobile Header Content Targets (< lg)
+    const modalMobileHeaderNum = root.querySelector('.modal-mobile-header-num') as HTMLElement;
+    const modalMobileHeaderCat = root.querySelector('.modal-mobile-header-cat') as HTMLElement;
+    const modalMobileTitle = root.querySelector('.modal-mobile-title') as HTMLElement;
+    const modalMobileTagline = root.querySelector('.modal-mobile-tagline') as HTMLElement;
+    const modalMobileDescription = root.querySelector('.modal-mobile-description') as HTMLElement;
+    const modalMobileDemoLink = root.querySelector('.modal-mobile-demo-link') as HTMLAnchorElement;
+    const modalMobileCodeLink = root.querySelector('.modal-mobile-code-link') as HTMLAnchorElement;
+    const modalMobileMetrics = root.querySelector('.modal-mobile-metrics') as HTMLElement;
+    const modalMobileTags = root.querySelector('.modal-mobile-tags') as HTMLElement;
+
+    const totalProjects = allProjects.length; // 6
+    const totalItems = items.length;          // 18
+
+    // Layout metrics
+    let itemWidth = 0;
+    let itemGap = 0;
+    let singleItemDistance = 0;
+    let totalTrackWidth = 0;
+
+    function measureLayout() {
+      if (items.length === 0) return;
+      const mediaBox = items[0].querySelector('.card-media-box') as HTMLElement;
+      itemWidth = mediaBox && mediaBox.offsetWidth > 0 ? mediaBox.offsetWidth : items[0].getBoundingClientRect().width;
+      
+      // Refined, intimate gap matching Jesper Landberg's editorial aesthetic:
+      // Mobile: 16px (1rem), Tablet: 24px (1.5rem), Desktop: 32px (2rem)
+      const w = window.innerWidth;
+      itemGap = w < 640 ? 16 : w < 1024 ? 24 : 32;
+
+      singleItemDistance = itemWidth + itemGap;
+      totalTrackWidth = singleItemDistance * totalItems;
+    }
+
+    measureLayout();
+    window.addEventListener('resize', measureLayout);
+
+    // Horizontal Physics Engine State (Smooth Lerp + Dynamic Infinite Wrapping)
+    let currentX = 0;
+    let targetX = 0;
+    let velocity = 0;
+    let currentSkew = 0;
+    let currentScale = 1;
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragDistanceTotal = 0;
+    let isHoveringCard = false;
+    let rafId: number;
+
+    // Modal Smooth Momentum Scrolling State
+    let isModalOpen = false;
+    let modalCurrentY = 0;
+    let modalTargetY = 0;
+    let modalMaxScroll = 0;
+
+    function updateModalMaxScroll() {
+      if (!modalScrollTrack || !modalViewport) return;
+      const trackHeight = modalScrollTrack.scrollHeight;
+      const viewportHeight = modalViewport.clientHeight;
+      modalMaxScroll = Math.max(0, trackHeight - viewportHeight);
+    }
+    window.addEventListener('resize', () => {
+      if (isModalOpen) updateModalMaxScroll();
+    });
+
+    // Cursor Lerp State
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let cursorX = mouseX;
+    let cursorY = mouseY;
+
+    // Modulo Wrapping Bounds
+    function wrapCoord(val: number, min: number, max: number): number {
+      const range = max - min;
+      return ((((val - min) % range) + range) % range) + min;
+    }
+
+    // Main Animation Loop running with requestAnimationFrame (Jesper Landberg physics)
+    function renderLoop() {
+      // 1. Modal Virtual Smooth Scroll Engine (Buttery Lerp Momentum)
+      if (isModalOpen && modalScrollTrack) {
+        modalCurrentY += (modalTargetY - modalCurrentY) * 0.082;
+        const clampedModalY = Math.max(0, Math.min(modalCurrentY, modalMaxScroll));
+        modalScrollTrack.style.transform = `translate3d(0, ${-clampedModalY}px, 0)`;
+
+        // Counter-parallax on modal hero image
+        if (modalHeroImg) {
+          modalHeroImg.style.transform = `translate3d(0, ${clampedModalY * 0.15}px, 0) scale(1.06)`;
+        }
+
+        // Reading depth progress rail & depth percentage
+        if (modalMaxScroll > 0) {
+          const railProgress = clampedModalY / modalMaxScroll;
+          if (modalProgressThumb) {
+            const railHeight = modalProgressThumb.parentElement?.offsetHeight || 144;
+            const thumbHeight = modalProgressThumb.offsetHeight || 32;
+            const thumbY = railProgress * (railHeight - thumbHeight);
+            modalProgressThumb.style.transform = `translate3d(0, ${thumbY}px, 0)`;
+          }
+          if (modalDepthPercent) {
+            const pct = Math.round(railProgress * 100);
+            modalDepthPercent.textContent = pct < 10 ? `0${pct}%` : `${pct}%`;
+          }
+        }
+      }
+
+      // 2. Horizontal Infinite Slider Inertia Lerp
+      currentX += (targetX - currentX) * 0.082;
+      velocity = targetX - currentX;
+
+      // Gentle auto cruising when idle (paused when modal open or hovering)
+      if (!isDragging && !isHoveringCard && !isModalOpen) {
+        targetX -= 0.65;
+      }
+
+      // Velocity Skew & Scale Elasticity
+      const targetSkew = Math.max(Math.min(-velocity * 0.038, 12), -12);
+      currentSkew += (targetSkew - currentSkew) * 0.12;
+
+      const targetScale = 1 - Math.min(Math.abs(velocity) * 0.0003, 0.06);
+      currentScale += (targetScale - currentScale) * 0.12;
+
+      // Dynamic Wrap & Parallax Calculation for each item
+      const viewportWidth = window.innerWidth;
+      const viewportCenter = viewportWidth / 2;
+      const wrapMin = -singleItemDistance * 1.5;
+      const wrapMax = totalTrackWidth - singleItemDistance * 1.5;
+
+      let closestItemIndex = 1;
+      let minDistanceToCenter = Infinity;
+
+      items.forEach((item, idx) => {
+        const initialItemX = idx * singleItemDistance;
+        const rawX = initialItemX + currentX;
+        const wrappedX = wrapCoord(rawX, wrapMin, wrapMax);
+
+        const cardCenter = wrappedX + itemWidth / 2;
+        const distFromCenter = Math.abs(cardCenter - viewportCenter);
+
+        if (distFromCenter < minDistanceToCenter) {
+          minDistanceToCenter = distFromCenter;
+          const realIdx = parseInt(item.dataset.realIndex || '1', 10);
+          closestItemIndex = realIdx;
+        }
+
+        // Apply physical transform (X position on item, skew + scale on inner wrapper)
+        item.style.transform = `translate3d(${wrappedX}px, 0, 0)`;
+        const skewWrapper = item.querySelector('.card-skew-wrapper') as HTMLElement;
+        if (skewWrapper) {
+          skewWrapper.style.transform = `skewX(${currentSkew}deg) scale(${currentScale})`;
+        }
+
+        // Apply inner image parallax
+        const img = item.querySelector('.card-img-parallax') as HTMLElement;
+        if (img) {
+          const norm = (cardCenter - viewportCenter) / (viewportWidth / 2);
+          const parallaxOffset = -norm * 14; // parallax range -14% to +14%
+          img.style.transform = `translate3d(${parallaxOffset}%, 0, 0) scale(1.15)`;
+        }
+      });
+
+      // Update HUD Counter & Progress Rail
+      if (hudCurrentIndex) {
+        const formatted = closestItemIndex < 10 ? `0${closestItemIndex}` : `${closestItemIndex}`;
+        if (hudCurrentIndex.textContent !== formatted) {
+          hudCurrentIndex.textContent = formatted;
+        }
+      }
+
+      if (progressThumb) {
+        const cycleLength = singleItemDistance * totalProjects;
+        const cycleProgress = wrapCoord(-currentX, 0, cycleLength) / cycleLength;
+        const railWidth = progressThumb.parentElement?.offsetWidth || 200;
+        const thumbWidth = progressThumb.offsetWidth || 50;
+        const thumbX = cycleProgress * (railWidth - thumbWidth);
+        progressThumb.style.transform = `translate3d(${thumbX}px, 0, 0)`;
+      }
+
+      // Magnetic Cursor Lerp
+      cursorX += (mouseX - cursorX) * 0.16;
+      cursorY += (mouseY - cursorY) * 0.16;
+      if (cursor) {
+        cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0)`;
+      }
+
+      rafId = requestAnimationFrame(renderLoop);
+    }
+
+    rafId = requestAnimationFrame(renderLoop);
+
+    // ================= WHEEL & TRACKPAD INTERACTION =================
+    const onWheel = (e: WheelEvent) => {
+      if (isModalOpen) {
+        // Virtual smooth scrolling inside the modal dialog
+        modalTargetY += (e.deltaY || e.deltaX) * 1.15;
+        modalTargetY = Math.max(0, Math.min(modalTargetY, modalMaxScroll));
+        return;
+      }
+      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      targetX -= delta * 1.35;
+    };
+    window.addEventListener('wheel', onWheel, { passive: true });
+
+    // ================= MODAL TOUCH SWIPE ENGINE WITH INERTIA FLICK =================
+    let modalTouchStartY = 0;
+    let modalTouchPrevY = 0;
+    let modalTouchVelocityY = 0;
+    let modalTouchLastTime = 0;
+
+    modalViewport?.addEventListener('touchstart', (e: TouchEvent) => {
+      if (!isModalOpen) return;
+      modalTouchStartY = e.touches[0].clientY;
+      modalTouchPrevY = modalTouchStartY;
+      modalTouchVelocityY = 0;
+      modalTouchLastTime = performance.now();
+    }, { passive: true });
+
+    modalViewport?.addEventListener('touchmove', (e: TouchEvent) => {
+      if (!isModalOpen) return;
+      const touchY = e.touches[0].clientY;
+      const now = performance.now();
+      const dt = Math.max(1, now - modalTouchLastTime);
+      const deltaY = modalTouchPrevY - touchY;
+      modalTouchVelocityY = deltaY / dt;
+      modalTouchPrevY = touchY;
+      modalTouchLastTime = now;
+
+      modalTargetY += deltaY * 1.25;
+      modalTargetY = Math.max(0, Math.min(modalTargetY, modalMaxScroll));
+    }, { passive: true });
+
+    modalViewport?.addEventListener('touchend', () => {
+      if (!isModalOpen) return;
+      modalTargetY += modalTouchVelocityY * 150;
+      modalTargetY = Math.max(0, Math.min(modalTargetY, modalMaxScroll));
+    });
+
+    // ================= POINTER DRAG & TOUCH SWIPE FOR SLIDER =================
+    let pointerStartX = 0;
+    let pointerStartY = 0;
+    let pointerStartTime = 0;
+    let isDragMovement = false;
+    let pointerDownItem: HTMLElement | null = null;
+
+    const onPointerDown = (e: PointerEvent) => {
+      if (isModalOpen) return;
+      const target = e.target as HTMLElement;
+      if (target.closest('button') || target.closest('a')) return;
+
+      pointerDownItem = target.closest('.slider-item');
+      isDragging = false;
+      isDragMovement = false;
+      pointerStartX = e.clientX;
+      pointerStartY = e.clientY;
+      dragStartX = e.clientX;
+      pointerStartTime = Date.now();
+    };
+
+    const onPointerMove = (e: PointerEvent) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
+      if (cursor && cursor.style.opacity === '0') {
+        cursor.style.opacity = '1';
+      }
+
+      if (isModalOpen) return;
+
+      if (pointerStartTime > 0) {
+        const deltaXTotal = Math.abs(e.clientX - pointerStartX);
+
+        // Only start dragging once mouse moves more than 6px
+        if (!isDragging && deltaXTotal > 6) {
+          isDragging = true;
+          isDragMovement = true;
+          try {
+            stage.setPointerCapture(e.pointerId);
+          } catch (err) {}
+          if (cursorPill) cursorPill.style.transform = 'scale(0.85)';
+        }
+
+        if (isDragging) {
+          const deltaX = e.clientX - dragStartX;
+          targetX += deltaX * 1.45;
+          dragStartX = e.clientX;
+        }
+      }
+    };
+
+    const onPointerUp = (e?: PointerEvent) => {
+      if (isDragging && e) {
+        try {
+          stage.releasePointerCapture(e.pointerId);
+        } catch (err) {}
+      }
+
+      if (cursorPill) {
+        cursorPill.style.transform = 'scale(1)';
+      }
+
+      // If user clicked or tapped without dragging past the 6px threshold
+      if (!isDragMovement && pointerStartTime > 0 && pointerDownItem) {
+        const projId = pointerDownItem.dataset.projectId;
+        if (projId && !isModalOpen) {
+          openModal(projId);
+        }
+      }
+
+      isDragging = false;
+      isDragMovement = false;
+      pointerStartTime = 0;
+      pointerDownItem = null;
+    };
+
+    stage.addEventListener('pointerdown', onPointerDown);
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointercancel', onPointerUp);
+
+    // ================= STEPPER BUTTONS [ ← ] [ → ] =================
+    btnPrev?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      targetX += singleItemDistance;
+    });
+
+    btnNext?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      targetX -= singleItemDistance;
+    });
+
+    // ================= KEYBOARD ARROWS & ESCAPE =================
+    window.addEventListener('keydown', (e) => {
+      if (isModalOpen) {
+        if (e.key === 'Escape') closeModal();
+        if (e.key === 'ArrowDown') {
+          modalTargetY = Math.min(modalTargetY + 140, modalMaxScroll);
+        } else if (e.key === 'ArrowUp') {
+          modalTargetY = Math.max(modalTargetY - 140, 0);
+        } else if (e.key === ' ' || e.key === 'PageDown') {
+          modalTargetY = Math.min(modalTargetY + window.innerHeight * 0.75, modalMaxScroll);
+        } else if (e.key === 'PageUp') {
+          modalTargetY = Math.max(modalTargetY - window.innerHeight * 0.75, 0);
+        }
+        return;
+      }
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        targetX -= singleItemDistance;
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        targetX += singleItemDistance;
+      }
+    });
+
+    // ================= CARD HOVER & SPECULAR GLARE =================
+    items.forEach((item) => {
+      const glare = item.querySelector('.card-glare') as HTMLElement;
+
+      item.addEventListener('mouseenter', () => {
+        isHoveringCard = true;
+        if (cursorText) cursorText.textContent = 'VIEW';
+        if (cursorPill) {
+          cursorPill.style.background = '#3b82f6';
+          cursorPill.style.color = '#ffffff';
+        }
+      });
+
+      item.addEventListener('mouseleave', () => {
+        isHoveringCard = false;
+        if (cursorText) cursorText.textContent = 'DRAG';
+        if (cursorPill) {
+          cursorPill.style.background = '#ffffff';
+          cursorPill.style.color = '#07090e';
+        }
+        if (glare) glare.style.opacity = '0';
+      });
+
+      item.addEventListener('mousemove', (e) => {
+        const rect = item.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        if (glare) {
+          glare.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
+          glare.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
+          glare.style.opacity = '1';
+        }
+      });
+
+      item.addEventListener('click', (e) => {
+        if (isDragMovement) return;
+        const projId = item.dataset.projectId;
+        if (projId && !isModalOpen) openModal(projId);
+      });
+    });
+
+    // ================= POPULATE MODAL DATA (DESKTOP & MOBILE) =================
+    const currentLang = document.documentElement.lang === 'vi' ? 'vi' : 'en';
+
+    function populateModalData(projectId: string) {
+      const proj = allProjects.find((p: any) => p.id === projectId);
+      if (!proj) return;
+
+      const currentIdx = allProjects.findIndex((p: any) => p.id === projectId);
+      const prevIdx = (currentIdx - 1 + totalProjects) % totalProjects;
+      const nextIdx = (currentIdx + 1) % totalProjects;
+      const prevProj = allProjects[prevIdx];
+      const nextProj = allProjects[nextIdx];
+
+      // Update Side Peeks
+      if (modalPeekPrev && prevProj) {
+        modalPeekPrev.setAttribute('data-target-id', prevProj.id);
+        if (modalPeekPrevTitle) modalPeekPrevTitle.textContent = `${prevProj.num} // PREV`;
+      }
+      if (modalPeekNext && nextProj) {
+        modalPeekNext.setAttribute('data-target-id', nextProj.id);
+        if (modalPeekNextTitle) modalPeekNextTitle.textContent = `${nextProj.num} // NEXT`;
+      }
+
+      // Update Desktop Left Panel
+      if (modalHeaderNum) modalHeaderNum.textContent = `PROJECT ${proj.num || '01'}`;
+      if (modalHeaderCat) modalHeaderCat.textContent = proj.category;
+      if (modalTitle) modalTitle.textContent = proj.title;
+      if (modalTagline) modalTagline.textContent = proj.tagline[currentLang] || proj.tagline.en;
+      if (modalDescription) modalDescription.textContent = proj.description[currentLang] || proj.description.en;
+      if (modalMetrics) modalMetrics.textContent = proj.metrics;
+      if (modalDemoLink) modalDemoLink.href = proj.demoUrl;
+      if (modalCodeLink) modalCodeLink.href = proj.githubUrl;
+
+      // Update Mobile Header (< lg)
+      if (modalMobileHeaderNum) modalMobileHeaderNum.textContent = `PROJECT ${proj.num || '01'}`;
+      if (modalMobileHeaderCat) modalMobileHeaderCat.textContent = proj.category;
+      if (modalMobileTitle) modalMobileTitle.textContent = proj.title;
+      if (modalMobileTagline) modalMobileTagline.textContent = proj.tagline[currentLang] || proj.tagline.en;
+      if (modalMobileDescription) modalMobileDescription.textContent = proj.description[currentLang] || proj.description.en;
+      if (modalMobileMetrics) modalMobileMetrics.textContent = proj.metrics;
+      if (modalMobileDemoLink) modalMobileDemoLink.href = proj.demoUrl;
+      if (modalMobileCodeLink) modalMobileCodeLink.href = proj.githubUrl;
+
+      // Update Media Image
+      if (modalHeroImg && proj.image) {
+        modalHeroImg.src = proj.image.src || proj.image;
+        modalHeroImg.alt = proj.title;
+      }
+
+      // Update Tags
+      const tagsHtml = proj.tags
+        .map((t: string) => `<span class="px-2.5 py-1 rounded-md text-[11px] font-mono bg-white/[0.06] text-white/90 border border-white/10">${t}</span>`)
+        .join('');
+      if (modalTags) modalTags.innerHTML = tagsHtml;
+      if (modalMobileTags) modalMobileTags.innerHTML = tagsHtml;
+
+      // Update Highlights
+      if (modalHighlights) {
+        const itemsList = proj.highlights[currentLang] || proj.highlights.en || [];
+        modalHighlights.innerHTML = itemsList
+          .map((h: string) => `<li class="flex items-start gap-3"><span class="text-blue-400 mt-1 text-xs">✦</span><span>${h}</span></li>`)
+          .join('');
+      }
+
+      // Update Next Project Jumper
+      if (modalNextTitle && nextProj) {
+        modalNextTitle.textContent = `${nextProj.num} // ${nextProj.title}`;
+        modalNextBox?.setAttribute('data-next-id', nextProj.id);
+      }
+    }
+
+    // ================= OPEN / CLOSE / SWITCH MODAL (GSAP TIMELINE) =================
+    function openModal(projectId: string) {
+      if (!modalBackdrop) return;
+      populateModalData(projectId);
+
+      isModalOpen = true;
+      modalTargetY = 0;
+      modalCurrentY = 0;
+      if (modalScrollTrack) modalScrollTrack.style.transform = 'translate3d(0, 0, 0)';
+
+      setTimeout(updateModalMaxScroll, 50);
+
+      modalBackdrop.style.display = 'flex';
+      modalBackdrop.classList.remove('pointer-events-none');
+      modalBackdrop.classList.add('pointer-events-auto');
+      modalBackdrop.setAttribute('aria-hidden', 'false');
+
+      const tl = gsap.timeline();
+      tl.to(modalBackdrop, { autoAlpha: 1, duration: 0.35, ease: 'power2.out' })
+        .fromTo(modalSheet,
+          { scale: 0.93, y: 24, autoAlpha: 0 },
+          { scale: 1, y: 0, autoAlpha: 1, duration: 0.45, ease: 'power3.out' },
+          '-=0.18'
+        )
+        .fromTo(modalHeroImg,
+          { scale: 1.15 },
+          { scale: 1.06, duration: 0.65, ease: 'power2.out' },
+          '-=0.3'
+        );
+    }
+
+    function closeModal() {
+      if (!modalBackdrop || !isModalOpen) return;
+      isModalOpen = false;
+
+      const tl = gsap.timeline({
+        onComplete: () => {
+          modalBackdrop.style.display = 'none';
+          modalBackdrop.classList.remove('pointer-events-auto');
+          modalBackdrop.classList.add('pointer-events-none');
+          modalBackdrop.setAttribute('aria-hidden', 'true');
+          if (modalScrollTrack) modalScrollTrack.style.transform = 'translate3d(0, 0, 0)';
+          modalTargetY = 0;
+          modalCurrentY = 0;
+        },
+      });
+
+      tl.to(modalSheet, { scale: 0.94, y: 20, autoAlpha: 0, duration: 0.25, ease: 'power2.in' })
+        .to(modalBackdrop, { autoAlpha: 0, duration: 0.2, ease: 'power2.in' }, '-=0.1');
+    }
+
+    function switchProject(nextId: string) {
+      if (!nextId) return;
+      const contentTargets = [modalLeftPanel, modalScrollTrack].filter(Boolean);
+
+      gsap.to(contentTargets, {
+        autoAlpha: 0,
+        y: -15,
+        duration: 0.18,
+        ease: 'power2.in',
+        onComplete: () => {
+          populateModalData(nextId);
+          modalTargetY = 0;
+          modalCurrentY = 0;
+          if (modalScrollTrack) modalScrollTrack.style.transform = 'translate3d(0, 0, 0)';
+          setTimeout(updateModalMaxScroll, 50);
+
+          gsap.fromTo(contentTargets,
+            { autoAlpha: 0, y: 15 },
+            { autoAlpha: 1, y: 0, duration: 0.35, ease: 'power3.out' }
+          );
+        }
+      });
+    }
+
+    // Modal Interaction Listeners
+    modalNextBox?.addEventListener('click', () => {
+      const nextId = modalNextBox.getAttribute('data-next-id');
+      if (nextId) switchProject(nextId);
+    });
+
+    modalPeekPrev?.addEventListener('click', () => {
+      const prevId = modalPeekPrev.getAttribute('data-target-id');
+      if (prevId) switchProject(prevId);
+    });
+
+    modalPeekNext?.addEventListener('click', () => {
+      const nextId = modalPeekNext.getAttribute('data-target-id');
+      if (nextId) switchProject(nextId);
+    });
+
+    btnCloseModal?.addEventListener('click', closeModal);
+
+    modalBackdrop?.addEventListener('click', (e) => {
+      if (e.target === modalBackdrop) closeModal();
+    });
+
+    // Cleanup on Astro page swap
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        cancelAnimationFrame(rafId);
+        window.removeEventListener('wheel', onWheel);
+        stage.removeEventListener('pointerdown', onPointerDown);
+        window.removeEventListener('pointermove', onPointerMove);
+        window.removeEventListener('pointerup', onPointerUp);
+        window.removeEventListener('resize', measureLayout);
+        root.dataset.initialized = 'false';
+      },
+      { once: true }
+    );
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initJesperSlider);
+  } else {
+    initJesperSlider();
+  }
+  document.addEventListener('astro:page-load', initJesperSlider);
+</script>
