@@ -1,0 +1,684 @@
+---
+import { Image } from 'astro:assets';
+import { useTranslations, useTranslatedPath, type Lang } from '../i18n/utils';
+import avatarImg from '../assets/images/card-front.png';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+
+const isVi = lang === 'vi';
+
+const quickPrompts = isVi
+  ? [
+      { id: 'projects', label: '🚀 Dự án nổi bật', prompt: 'Cho mình xem các dự án tiêu biểu của bạn' },
+      { id: 'stack', label: '🛠️ Tech Stack', prompt: 'Tech stack và công nghệ chính bạn sử dụng là gì?' },
+      { id: 'contact', label: '🤝 Hợp tác', prompt: 'Làm sao để liên hệ hợp tác làm dự án với bạn?' },
+      { id: 'joke', label: '😄 Chuyện cười dev', prompt: 'Kể cho mình nghe một mẩu chuyện cười lập trình' },
+    ]
+  : [
+      { id: 'projects', label: '🚀 Featured Works', prompt: 'Show me your signature projects and works' },
+      { id: 'stack', label: '🛠️ Tech Stack', prompt: 'What technologies and frameworks do you specialize in?' },
+      { id: 'contact', label: '🤝 Work Together', prompt: 'How can we work together or get in touch?' },
+      { id: 'joke', label: '😄 Dev Joke', prompt: 'Tell me a funny developer joke' },
+    ];
+---
+
+<div class="live-chat-widget-root pointer-events-none select-none" data-lang={lang}>
+
+  <!-- 1. FLOATING LAUNCHER BUTTON -->
+  <div class="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50 pointer-events-auto flex items-center gap-2.5">
+    
+    <!-- Teaser Speech Bubble (Pops up with GSAP) -->
+    <div 
+      id="widget-teaser-pill"
+      class="widget-teaser hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-lg shadow-black/5 dark:shadow-black/40 text-xs font-medium text-slate-700 dark:text-slate-200 cursor-pointer hover:border-blue-500/40 transition-all opacity-0 translate-y-2"
+    >
+      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span>{t('widget.tooltip')}</span>
+      <button 
+        type="button" 
+        id="teaser-dismiss-btn" 
+        class="text-slate-400 hover:text-slate-600 dark:hover:text-white ml-1 text-xs"
+        aria-label="Dismiss notification"
+      >
+        ✕
+      </button>
+    </div>
+
+    <!-- Main Floating Trigger Button -->
+    <button
+      id="widget-trigger-btn"
+      type="button"
+      class="widget-launcher-btn group relative w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-blue-500 text-white shadow-[0_10px_25px_-5px_rgba(37,99,235,0.5)] hover:shadow-[0_15px_30px_-5px_rgba(37,99,235,0.65)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center cursor-pointer border border-white/20"
+      aria-label={t('widget.chatWithMe')}
+      title={t('widget.chatWithMe')}
+    >
+      <!-- Chat Icon State -->
+      <span class="launcher-icon-chat flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+      </span>
+
+      <!-- Close Icon State (Hidden by default) -->
+      <span class="launcher-icon-close hidden text-xl font-light">
+        ✕
+      </span>
+
+      <!-- Pulsing Emerald Live Status Badge -->
+      <span class="absolute top-0 right-0 flex h-3.5 w-3.5">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-white dark:border-slate-900"></span>
+      </span>
+    </button>
+  </div>
+
+  <!-- 2. EXPANDABLE FLOATING CHAT POPUP WINDOW -->
+  <div
+    id="widget-chat-window"
+    class="widget-chat-modal fixed bottom-20 sm:bottom-22 right-4 sm:right-6 z-50 w-[94vw] sm:w-[420px] md:w-[450px] h-[580px] sm:h-[620px] max-h-[86vh] rounded-3xl border border-black/10 dark:border-white/10 bg-white/95 dark:bg-[#0c101c]/95 backdrop-blur-2xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_25px_70px_-15px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col pointer-events-auto hidden opacity-0 scale-90 origin-bottom-right"
+  >
+    <!-- Widget Top Header -->
+    <div class="widget-header flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-black/5 dark:border-white/10 bg-slate-50/70 dark:bg-white/[0.02]">
+      <!-- Identity -->
+      <div class="flex items-center gap-2.5">
+        <div class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border border-blue-500/40 p-0.5 bg-gradient-to-tr from-blue-600 to-indigo-600 flex-shrink-0">
+          <Image src={avatarImg} alt="Thái Tín Khang" class="w-full h-full object-cover rounded-full" width={64} height={64} />
+          <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white dark:border-[#0c101c]"></span>
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-tight">
+              Thái Tín Khang
+            </h2>
+            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400">
+              AI BOT
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>{isVi ? 'Trực tuyến • Phản hồi tức thì' : 'Online • Instant Responses'}</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-1">
+        <!-- Expand to Full Chat Page -->
+        <a 
+          href={translatePath('/chat')}
+          class="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-sm font-semibold"
+          title={t('widget.openFull')}
+          aria-label={t('widget.openFull')}
+        >
+          ↗
+        </a>
+        <!-- Close Window -->
+        <button
+          id="widget-close-btn"
+          type="button"
+          class="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-all text-base cursor-pointer"
+          title={t('widget.close')}
+          aria-label={t('widget.close')}
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <!-- Widget Message Body -->
+    <div id="widget-messages-container" class="widget-body flex-1 overflow-y-auto px-4 sm:px-5 py-4 space-y-4 scroll-smooth">
+      
+      <!-- Timestamp divider -->
+      <div class="flex items-center justify-center my-1">
+        <span class="px-3 py-0.5 rounded-full text-[10px] font-mono bg-black/5 dark:bg-white/5 text-slate-400">
+          {isVi ? 'Hôm nay • Trò chuyện trực tuyến' : 'Today • Live Chat'}
+        </span>
+      </div>
+
+      <!-- Welcoming bot bubble 1 -->
+      <div class="msg-row bot-row flex items-start gap-3">
+        <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 border border-blue-500/30">
+          <Image src={avatarImg} alt="Avatar" class="w-full h-full object-cover" width={64} height={64} />
+        </div>
+        <div class="max-w-[85%] space-y-1">
+          <div class="p-3.5 rounded-2xl rounded-tl-sm bg-slate-100 dark:bg-slate-800/80 border border-black/5 dark:border-white/10 text-[13px] sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200 shadow-xs relative group">
+            <p>
+              {isVi 
+                ? 'Xin chào bạn! 👋 Mình là trợ lý ảo của Thái Tín Khang (@kinyias). Chào mừng bạn đến với portfolio của mình!' 
+                : 'Hello there! 👋 I am the virtual assistant for Thái Tín Khang (@kinyias). Welcome to my portfolio!'}
+            </p>
+            <!-- Reaction pills -->
+            <div class="reaction-tray opacity-0 group-hover:opacity-100 transition-opacity absolute -bottom-2.5 right-1 flex items-center gap-1 bg-white dark:bg-slate-900 border border-black/10 dark:border-white/10 rounded-full px-2 py-0.5 shadow-xs">
+              <button type="button" class="react-btn text-xs hover:scale-125 transition-transform" data-emoji="❤️">❤️</button>
+              <button type="button" class="react-btn text-xs hover:scale-125 transition-transform" data-emoji="🔥">🔥</button>
+              <button type="button" class="react-btn text-xs hover:scale-125 transition-transform" data-emoji="🚀">🚀</button>
+            </div>
+          </div>
+          <span class="text-[10px] text-slate-400 font-mono ml-1">10:42 AM</span>
+        </div>
+      </div>
+
+      <!-- Welcoming bot bubble 2: Tech Stack, Experience, Education, Certificate, Contact Email -->
+      <div class="msg-row bot-row flex items-start gap-3">
+        <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 border border-blue-500/30">
+          <Image src={avatarImg} alt="Avatar" class="w-full h-full object-cover" width={64} height={64} />
+        </div>
+        <div class="max-w-[92%] space-y-1">
+          <div class="p-3.5 rounded-2xl rounded-tl-sm bg-slate-100 dark:bg-slate-800/80 border border-black/5 dark:border-white/10 text-xs sm:text-[13px] leading-relaxed text-slate-800 dark:text-slate-200 shadow-xs space-y-2">
+            <p class="font-semibold text-slate-900 dark:text-white">
+              {isVi ? 'Thông tin hồ sơ năng lực của Thái Tín Khang:' : "Overview of Thái Tín Khang's profile & background:"}
+            </p>
+            <div class="space-y-1.5 pt-1 border-t border-black/5 dark:border-white/10">
+              <div>
+                <span class="font-semibold text-blue-600 dark:text-blue-400">🛠️ Tech Stack: </span>
+                <span class="text-slate-700 dark:text-slate-300">TypeScript, Astro 7, Next.js, React, Tailwind CSS v4, GSAP 3 (ScrollTrigger, Timelines), Three.js, Node.js</span>
+              </div>
+              <div>
+                <span class="font-semibold text-blue-600 dark:text-blue-400">💼 Work Experience: </span>
+                <span class="text-slate-700 dark:text-slate-300">
+                  <strong class="text-slate-900 dark:text-white font-medium">2023 – {isVi ? 'Hiện tại' : 'Present'}:</strong> {isVi ? 'Software Developer & Tech Content Creator' : 'Software Developer & Tech Content Creator'}
+                </span>
+              </div>
+              <div>
+                <span class="font-semibold text-blue-600 dark:text-blue-400">🎓 Education: </span>
+                <span class="text-slate-700 dark:text-slate-300">
+                  <strong class="text-slate-900 dark:text-white font-medium">2020 – 2024:</strong> {isVi ? 'Cử nhân Công nghệ Thông tin / Kỹ thuật Phần mềm' : 'B.S. in Information Technology / Software Engineering'}
+                </span>
+              </div>
+              <div>
+                <span class="font-semibold text-blue-600 dark:text-blue-400">📜 Certificate: </span>
+                <span class="text-slate-700 dark:text-slate-300 inline-flex flex-wrap items-center gap-1">
+                  <span>{isVi ? 'Chứng chỉ Kỹ thuật Lập trình Web & Frontend Architecture (2024)' : 'Modern Web Engineering & Frontend Architecture (2024)'}</span>
+                  <a 
+                    href="https://linkedin.com/in/kinyias/details/certifications/" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    class="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[10px] font-mono font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 transition-all"
+                  >
+                    <span>✓ {isVi ? 'Xác thực' : 'Verify'}</span>
+                    <span>↗</span>
+                  </a>
+                </span>
+              </div>
+              <div>
+                <span class="font-semibold text-blue-600 dark:text-blue-400">✉️ Contact Email: </span>
+                <a href="mailto:kinyias.dev@gmail.com" class="text-blue-600 dark:text-blue-400 hover:underline font-mono font-medium">kinyias.dev@gmail.com</a>
+              </div>
+            </div>
+          </div>
+          <span class="text-[10px] text-slate-400 font-mono ml-1">10:42 AM</span>
+        </div>
+      </div>
+
+
+      <!-- Realtime dynamic messages appended here -->
+      <div id="widget-dynamic-messages" class="space-y-4"></div>
+
+      <!-- Typing Indicator -->
+      <div id="widget-typing-indicator" class="msg-row bot-row flex items-start gap-3 hidden opacity-0">
+        <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 border border-blue-500/30">
+          <Image src={avatarImg} alt="Avatar" class="w-full h-full object-cover" width={64} height={64} />
+        </div>
+        <div class="px-3.5 py-2.5 rounded-2xl rounded-tl-sm bg-slate-100 dark:bg-slate-800/80 border border-black/5 dark:border-white/10 flex items-center gap-1.5 shadow-xs">
+          <span class="widget-typing-dot w-2 h-2 rounded-full bg-blue-500"></span>
+          <span class="widget-typing-dot w-2 h-2 rounded-full bg-blue-500"></span>
+          <span class="widget-typing-dot w-2 h-2 rounded-full bg-blue-500"></span>
+          <span class="text-[11px] text-slate-400 font-mono ml-1.5">
+            {isVi ? 'Khang đang soạn...' : 'Typing...'}
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Quick Prompts Horizontal Bar -->
+    <div class="widget-prompts px-3.5 py-2 bg-slate-50/70 dark:bg-white/[0.02] border-t border-black/5 dark:border-white/10 overflow-x-auto no-scrollbar flex items-center gap-1.5">
+      {quickPrompts.map((item) => (
+        <button
+          type="button"
+          class="widget-prompt-chip flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border border-black/10 dark:border-white/15 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-blue-500 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400 transition-all cursor-pointer whitespace-nowrap active:scale-95 shadow-2xs"
+          data-prompt={item.prompt}
+          data-id={item.id}
+        >
+          {item.label}
+        </button>
+      ))}
+    </div>
+
+    <!-- Widget Bottom Input Bar -->
+    <div class="widget-input-bar p-3 bg-white/90 dark:bg-[#0c101c]/95 border-t border-black/5 dark:border-white/10">
+      <form id="widget-chat-form" class="flex items-center gap-2">
+        <input 
+          id="widget-user-input"
+          type="text" 
+          placeholder={t('chat.inputPlaceholder')}
+          autocomplete="off"
+          class="flex-1 px-4 py-2 rounded-full bg-slate-100/80 dark:bg-slate-800/60 border border-transparent focus:border-blue-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 transition-all"
+        />
+        <button 
+          id="widget-send-btn"
+          type="submit" 
+          class="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center transition-all shadow-md shadow-blue-600/30 cursor-pointer active:scale-95 disabled:opacity-50 flex-shrink-0"
+          title={t('chat.send')}
+          aria-label={t('chat.send')}
+        >
+          <span class="text-sm">➤</span>
+        </button>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+
+  // Audio Synthesizer (Zero dependencies, Web Audio API)
+  class WidgetAudioFx {
+    private ctx: AudioContext | null = null;
+    public enabled: boolean = true;
+
+    private getContext(): AudioContext | null {
+      if (!this.enabled) return null;
+      if (!this.ctx && typeof window !== 'undefined') {
+        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioCtx) this.ctx = new AudioCtx();
+      }
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+      return this.ctx;
+    }
+
+    playSend() {
+      const ctx = this.getContext();
+      if (!ctx) return;
+      try {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(540, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12);
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.13);
+      } catch (e) {}
+    }
+
+    playReceive() {
+      const ctx = this.getContext();
+      if (!ctx) return;
+      try {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(700, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(420, ctx.currentTime + 0.18);
+        gain.gain.setValueAtTime(0.09, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.19);
+      } catch (e) {}
+    }
+
+    playReaction() {
+      const ctx = this.getContext();
+      if (!ctx) return;
+      try {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.14);
+        gain.gain.setValueAtTime(0.06, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.14);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.15);
+      } catch (e) {}
+    }
+  }
+
+  const widgetAudio = new WidgetAudioFx();
+
+  const repliesEn: Record<string, string> = {
+    projects: "Khang's highlight works include: 🌟 **Aura Design Architecture** (3D tilt cards), 🚀 **Jesper Landberg Infinite Gallery** (velocity skew lerp), and ⚡ **Nexus OS**. Check them out in the Projects tab!",
+    stack: "Core stack: 💻 **TypeScript & modern JS**, 🚀 **Astro 7 & Next.js**, 🎨 **GSAP 3 Motion & Tailwind v4**, ⚡ **100 Lighthouse Performance Standards**.",
+    contact: "You can collaborate directly with Khang! ✉️ Reach out via email or GitHub [@kinyias](https://github.com/kinyias) and LinkedIn. Open for freelance contracts and engineering roles!",
+    joke: "Why do programmers prefer dark mode? Because light attracts bugs! 🐛😄",
+    default: "Thanks for reaching out! Khang is focused on engineering modern high-performance web experiences. Feel free to ask more or visit the full Chat page!"
+  };
+
+  const repliesVi: Record<string, string> = {
+    projects: "Các dự án nổi bật của Khang gồm: 🌟 **Aura Design Architecture** (thẻ 3D nghiêng theo chuột), 🚀 **Jesper Kinetic Infinite Slider** (lướt vô tận quán tính), và ⚡ **Nexus OS**. Bạn có thể xem thêm ở mục Dự án nhé!",
+    stack: "Tech stack chủ lực: 💻 **TypeScript & JavaScript**, 🚀 **Astro & Tailwind CSS v4**, 🎨 **GSAP 3 Animation Engine**, ⚡ **Tối ưu 100 điểm Lighthouse**.",
+    contact: "Kết nối nhanh với Khang qua GitHub [@kinyias](https://github.com/kinyias) hoặc email hợp tác. Khang luôn sẵn sàng cho các dự án web đột phá!",
+    joke: "Tại sao lập trình viên luôn thích bật Dark Mode? Vì ánh sáng sẽ thu hút bọ (bugs)! 🐛😆",
+    default: "Cảm ơn bạn đã nhắn tin! Khang luôn sẵn lòng chia sẻ và hợp tác xây dựng sản phẩm web hiện đại. Bạn có thể nhấn ↗ để mở toàn màn hình chat nhé!"
+  };
+
+  function initLiveChatWidget() {
+    const rootEl = document.querySelector('.live-chat-widget-root') as HTMLElement;
+    if (!rootEl) return;
+    if (rootEl.dataset.initialized === 'true') return;
+    rootEl.dataset.initialized = 'true';
+
+    const ctx = gsap.context(() => {
+      const triggerBtn = rootEl.querySelector('#widget-trigger-btn') as HTMLElement;
+      const chatWindow = rootEl.querySelector('#widget-chat-window') as HTMLElement;
+      const closeBtn = rootEl.querySelector('#widget-close-btn') as HTMLElement;
+      const teaserPill = rootEl.querySelector('#widget-teaser-pill') as HTMLElement;
+      const teaserDismiss = rootEl.querySelector('#teaser-dismiss-btn') as HTMLElement;
+      const chatIcon = rootEl.querySelector('.launcher-icon-chat') as HTMLElement;
+      const closeIcon = rootEl.querySelector('.launcher-icon-close') as HTMLElement;
+      const dynamicMsgs = rootEl.querySelector('#widget-dynamic-messages') as HTMLElement;
+      const msgsBody = rootEl.querySelector('#widget-messages-container') as HTMLElement;
+      const typingIndicator = rootEl.querySelector('#widget-typing-indicator') as HTMLElement;
+      const typingDots = rootEl.querySelectorAll('.widget-typing-dot');
+      const chatForm = rootEl.querySelector('#widget-chat-form') as HTMLFormElement;
+      const userInput = rootEl.querySelector('#widget-user-input') as HTMLInputElement;
+      const sendBtn = rootEl.querySelector('#widget-send-btn') as HTMLElement;
+
+      const isViLang = rootEl.getAttribute('data-lang') === 'vi';
+      let isOpen = false;
+
+      // 1. Teaser Pill entrance after 1.8s
+      if (teaserPill) {
+        gsap.to(teaserPill, {
+          autoAlpha: 1,
+          y: 0,
+          delay: 1.8,
+          duration: 0.5,
+          ease: 'back.out(1.5)',
+        });
+
+        teaserPill.addEventListener('click', (e) => {
+          if ((e.target as HTMLElement).id !== 'teaser-dismiss-btn') {
+            toggleWidget(true);
+          }
+        });
+
+        if (teaserDismiss) {
+          teaserDismiss.addEventListener('click', (e) => {
+            e.stopPropagation();
+            gsap.to(teaserPill, { autoAlpha: 0, y: 5, duration: 0.25, onComplete: () => teaserPill.remove() });
+          });
+        }
+      }
+
+      // 2. Typing dots infinite loop
+      if (typingDots.length) {
+        gsap.to(typingDots, {
+          y: -4,
+          duration: 0.35,
+          repeat: -1,
+          yoyo: true,
+          stagger: 0.1,
+          ease: 'sine.inOut',
+        });
+      }
+
+      // 3. Open/Close Toggle logic
+      function toggleWidget(open?: boolean) {
+        isOpen = typeof open === 'boolean' ? open : !isOpen;
+
+        if (isOpen) {
+          // Hide teaser pill
+          if (teaserPill) {
+            gsap.to(teaserPill, { autoAlpha: 0, duration: 0.2 });
+          }
+
+          // Switch icons
+          chatIcon.classList.add('hidden');
+          closeIcon.classList.remove('hidden');
+
+          // Open window animation
+          chatWindow.classList.remove('hidden');
+          gsap.fromTo(
+            chatWindow,
+            { scale: 0.85, autoAlpha: 0, y: 20 },
+            {
+              scale: 1,
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.35,
+              ease: 'back.out(1.4)',
+              onComplete: () => {
+                if (userInput) userInput.focus();
+                scrollToBottom();
+              },
+            }
+          );
+          widgetAudio.playReceive();
+        } else {
+          // Switch icons
+          chatIcon.classList.remove('hidden');
+          closeIcon.classList.add('hidden');
+
+          // Close window animation
+          gsap.to(chatWindow, {
+            scale: 0.85,
+            autoAlpha: 0,
+            y: 15,
+            duration: 0.25,
+            ease: 'power2.in',
+            onComplete: () => chatWindow.classList.add('hidden'),
+          });
+        }
+      }
+
+      if (triggerBtn) {
+        triggerBtn.addEventListener('click', () => toggleWidget());
+      }
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => toggleWidget(false));
+      }
+
+      // Close on Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isOpen) {
+          toggleWidget(false);
+        }
+      });
+
+      function scrollToBottom() {
+        if (!msgsBody) return;
+        gsap.to(msgsBody, {
+          scrollTop: msgsBody.scrollHeight + 80,
+          duration: 0.35,
+          ease: 'power2.out',
+        });
+      }
+
+      function spawnReaction(originEl: HTMLElement, emoji: string) {
+        widgetAudio.playReaction();
+        const rect = originEl.getBoundingClientRect();
+        const p = document.createElement('div');
+        p.textContent = emoji;
+        p.className = 'fixed pointer-events-none z-50 text-xl select-none';
+        p.style.left = `${rect.left + rect.width / 2}px`;
+        p.style.top = `${rect.top}px`;
+        document.body.appendChild(p);
+
+        gsap.fromTo(
+          p,
+          { scale: 0.6, autoAlpha: 1, y: 0 },
+          {
+            y: gsap.utils.random(-60, -90),
+            x: gsap.utils.random(-20, 20),
+            scale: 1.4,
+            autoAlpha: 0,
+            duration: 0.8,
+            ease: 'power2.out',
+            onComplete: () => p.remove(),
+          }
+        );
+      }
+
+      rootEl.querySelectorAll('.react-btn').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          const target = e.currentTarget as HTMLElement;
+          const emoji = target.getAttribute('data-emoji') || '❤️';
+          spawnReaction(target, emoji);
+        });
+      });
+
+      function createMsgBubble(text: string, isUser: boolean) {
+        const row = document.createElement('div');
+        row.className = `msg-row ${isUser ? 'user-row flex justify-end' : 'bot-row flex items-start gap-3'}`;
+
+        const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        if (isUser) {
+          row.innerHTML = `
+            <div class="max-w-[85%] space-y-1 text-right">
+              <div class="p-3.5 rounded-2xl rounded-tr-sm bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[13px] sm:text-sm leading-relaxed shadow-xs text-left">
+                <p>${text}</p>
+              </div>
+              <span class="text-[10px] text-slate-400 font-mono mr-1">${now}</span>
+            </div>
+          `;
+        } else {
+          row.innerHTML = `
+            <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 border border-blue-500/30">
+              <img src="/favicon.svg" alt="Avatar" class="w-full h-full object-cover" />
+            </div>
+            <div class="max-w-[85%] space-y-1">
+              <div class="p-3.5 rounded-2xl rounded-tl-sm bg-slate-100 dark:bg-slate-800/80 border border-black/5 dark:border-white/10 text-[13px] sm:text-sm leading-relaxed text-slate-800 dark:text-slate-200 shadow-xs relative group">
+                <p>${text}</p>
+                <div class="reaction-tray opacity-0 group-hover:opacity-100 transition-opacity absolute -bottom-2.5 right-1 flex items-center gap-1 bg-white dark:bg-slate-900 border border-black/10 dark:border-white/10 rounded-full px-2 py-0.5 shadow-xs">
+                  <button type="button" class="react-btn text-xs hover:scale-125 transition-transform" data-emoji="❤️">❤️</button>
+                  <button type="button" class="react-btn text-xs hover:scale-125 transition-transform" data-emoji="🔥">🔥</button>
+                  <button type="button" class="react-btn text-xs hover:scale-125 transition-transform" data-emoji="🚀">🚀</button>
+                </div>
+              </div>
+              <span class="text-[10px] text-slate-400 font-mono ml-1">${now}</span>
+            </div>
+          `;
+        }
+
+        dynamicMsgs.appendChild(row);
+
+        gsap.from(row, {
+          y: 15,
+          x: isUser ? 20 : -20,
+          scale: 0.9,
+          autoAlpha: 0,
+          duration: 0.35,
+          ease: 'back.out(1.5)',
+        });
+
+        row.querySelectorAll('.react-btn').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const target = e.currentTarget as HTMLElement;
+            const emoji = target.getAttribute('data-emoji') || '❤️';
+            spawnReaction(target, emoji);
+          });
+        });
+
+        scrollToBottom();
+      }
+
+      function getReply(query: string): string {
+        const q = query.toLowerCase();
+        const dict = isViLang ? repliesVi : repliesEn;
+
+        if (q.includes('project') || q.includes('dự án') || q.includes('work')) return dict.projects;
+        if (q.includes('stack') || q.includes('tech') || q.includes('công nghệ')) return dict.stack;
+        if (q.includes('contact') || q.includes('liên hệ') || q.includes('hire') || q.includes('hợp tác')) return dict.contact;
+        if (q.includes('joke') || q.includes('cười') || q.includes('vui')) return dict.joke;
+
+        return dict.default;
+      }
+
+      function handleSend(text: string) {
+        if (!text.trim()) return;
+
+        if (sendBtn) {
+          gsap.fromTo(sendBtn, { scale: 0.85 }, { scale: 1, duration: 0.3, ease: 'elastic.out(1.2, 0.4)' });
+        }
+
+        widgetAudio.playSend();
+        createMsgBubble(text, true);
+
+        if (typingIndicator) {
+          typingIndicator.classList.remove('hidden');
+          gsap.to(typingIndicator, { autoAlpha: 1, duration: 0.2 });
+          scrollToBottom();
+        }
+
+        const delay = gsap.utils.random(400, 800);
+        setTimeout(() => {
+          if (typingIndicator) {
+            gsap.to(typingIndicator, {
+              autoAlpha: 0,
+              duration: 0.15,
+              onComplete: () => typingIndicator.classList.add('hidden'),
+            });
+          }
+
+          widgetAudio.playReceive();
+          const reply = getReply(text);
+          createMsgBubble(reply, false);
+        }, delay);
+      }
+
+      if (chatForm && userInput) {
+        chatForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const msg = userInput.value.trim();
+          if (!msg) return;
+          userInput.value = '';
+          handleSend(msg);
+        });
+      }
+
+      // Quick prompt chips
+      rootEl.querySelectorAll('.widget-prompt-chip').forEach((chip) => {
+        chip.addEventListener('click', () => {
+          const prompt = chip.getAttribute('data-prompt') || chip.textContent?.trim() || '';
+          handleSend(prompt);
+        });
+      });
+
+    }, rootEl);
+
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        rootEl.dataset.initialized = 'false';
+        ctx.revert();
+      },
+      { once: true }
+    );
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLiveChatWidget);
+  } else {
+    initLiveChatWidget();
+  }
+  document.addEventListener('astro:page-load', initLiveChatWidget);
+</script>

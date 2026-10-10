@@ -1,0 +1,701 @@
+---
+import { Image } from 'astro:assets';
+import { useTranslations, useTranslatedPath, type Lang } from '../i18n/utils';
+import avatarImg from '../assets/images/card-front.png';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+
+const isVi = lang === 'vi';
+
+// Quick prompt suggestions
+const quickPrompts = isVi
+  ? [
+      { id: 'projects', label: '🚀 Dự án nổi bật', prompt: 'Cho mình xem các dự án tiêu biểu của bạn' },
+      { id: 'stack', label: '🛠️ Kỹ nghệ & Tech Stack', prompt: 'Tech stack và công nghệ chính bạn sử dụng là gì?' },
+      { id: 'contact', label: '🤝 Hợp tác & Liên hệ', prompt: 'Làm sao để liên hệ hợp tác làm dự án với bạn?' },
+      { id: 'performance', label: '⚡ Tối ưu hiệu năng GSAP', prompt: 'Bạn tối ưu animation GSAP và 60fps như thế nào?' },
+      { id: 'joke', label: '😄 Kể chuyện cười dev', prompt: 'Kể cho mình nghe một mẩu chuyện cười lập trình' },
+    ]
+  : [
+      { id: 'projects', label: '🚀 Featured Projects', prompt: 'Show me your signature projects and works' },
+      { id: 'stack', label: '🛠️ Core Tech Stack', prompt: 'What technologies and frameworks do you specialize in?' },
+      { id: 'contact', label: '🤝 Collaboration & Hire', prompt: 'How can we work together or get in touch?' },
+      { id: 'performance', label: '⚡ 60FPS GSAP Secrets', prompt: 'How do you optimize GSAP animations for ultra performance?' },
+      { id: 'joke', label: '😄 Tell a Dev Joke', prompt: 'Tell me a funny developer joke' },
+    ];
+---
+
+<div class="chat-pure-root relative w-full h-[calc(100dvh-1.5rem)] sm:h-[calc(100dvh-3rem)] max-w-4xl mx-auto my-2 sm:my-4 flex flex-col text-slate-800 dark:text-slate-100 selection:bg-blue-500/20">
+  
+  <!-- Subtle Atmospheric Backdrop -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden -z-10 rounded-3xl">
+    <div class="absolute top-10 left-1/2 -translate-x-1/2 w-[550px] h-[300px] bg-gradient-to-tr from-blue-600/10 via-indigo-500/10 to-purple-600/10 rounded-full blur-[100px] dark:from-blue-500/15 dark:via-cyan-500/10 dark:to-purple-600/15"></div>
+  </div>
+
+  <!-- Dedicated Chat Terminal Shell (Full Height Pure Chat) -->
+  <div class="chat-terminal-shell relative flex-1 rounded-2xl sm:rounded-3xl border border-black/10 dark:border-white/10 bg-white/80 dark:bg-[#0c101c]/90 backdrop-blur-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] dark:shadow-[0_25px_70px_-15px_rgba(0,0,0,0.7)] overflow-hidden flex flex-col">
+    
+    <!-- Top Header Bar of the Chat -->
+    <header class="chat-top-header flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-black/5 dark:border-white/10 bg-slate-50/60 dark:bg-white/[0.02]">
+      
+      <!-- Left: Back Button & Persona Identity -->
+      <div class="flex items-center gap-3">
+        <a 
+          href={translatePath('/')} 
+          class="back-btn group w-9 h-9 rounded-full flex items-center justify-center border border-black/10 dark:border-white/15 bg-white/80 dark:bg-slate-900/80 hover:bg-blue-500/10 hover:border-blue-500/40 transition-all text-slate-700 dark:text-slate-200"
+          title={t('chat.backHome')}
+          aria-label={t('chat.backHome')}
+        >
+          <span class="transition-transform duration-200 group-hover:-translate-x-0.5 text-sm">←</span>
+        </a>
+
+        <!-- Avatar & Info -->
+        <div class="flex items-center gap-2.5">
+          <div class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border border-blue-500/40 p-0.5 bg-gradient-to-tr from-blue-600 to-indigo-600 flex-shrink-0">
+            <Image 
+              src={avatarImg} 
+              alt="Thái Tín Khang" 
+              class="w-full h-full object-cover rounded-full" 
+              width={80} 
+              height={80} 
+            />
+            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white dark:border-[#0c101c]"></span>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <h1 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-tight">
+                Thái Tín Khang
+              </h1>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                AI BOT
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 leading-tight mt-0.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>{isVi ? 'Trực tuyến • Phản hồi qua GSAP' : 'Online • Powered by GSAP'}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </header>
+
+    <!-- Scrollable Messages Container -->
+    <div 
+      id="chat-messages-container"
+      class="chat-messages-body flex-1 overflow-y-auto px-4 sm:px-6 py-6 space-y-4 scroll-smooth"
+    >
+      <!-- Date Divider -->
+      <div class="chat-timestamp flex items-center justify-center my-2">
+        <span class="px-3 py-1 rounded-full text-[11px] font-mono bg-black/5 dark:bg-white/5 text-slate-400 dark:text-slate-500 border border-black/5 dark:border-white/5">
+          {isVi ? 'Hôm nay • Phiên trò chuyện tương tác' : 'Today • Live Interactive Session'}
+        </span>
+      </div>
+
+      <!-- Bot Welcome Bubble 1 -->
+      <div class="msg-row bot-row flex items-start gap-3">
+        <div class="bot-avatar-mini w-8 h-8 rounded-full overflow-hidden flex-shrink-0 border border-blue-500/30">
+          <Image src={avatarImg} alt="Avatar" class="w-full h-full object-cover" width={64} height={64} />
+        </div>
+        <div class="msg-bubble-group max-w-[85%] sm:max-w-[75%] space-y-1">
+          <div class="msg-bubble bot-bubble p-4 rounded-2xl rounded-tl-sm bg-slate-100 dark:bg-slate-800/80 border border-black/5 dark:border-white/10 text-sm leading-relaxed text-slate-800 dark:text-slate-200 shadow-sm relative group">
+            <p>
+              {isVi 
+                ? 'Xin chào bạn! 👋 Mình là trợ lý ảo của Thái Tín Khang (@kinyias). Chào mừng bạn đến với portfolio của mình!' 
+                : 'Hello there! 👋 I am the virtual assistant for Thái Tín Khang (@kinyias). Welcome to my portfolio!'}
+            </p>
+            <div class="reaction-tray opacity-0 group-hover:opacity-100 transition-opacity absolute -bottom-3 right-2 flex items-center gap-1 bg-white dark:bg-slate-900 border border-black/10 dark:border-white/10 rounded-full px-2 py-0.5 shadow-md">
+              <button type="button" class="react-btn hover:scale-125 transition-transform" data-emoji="❤️">❤️</button>
+              <button type="button" class="react-btn hover:scale-125 transition-transform" data-emoji="🔥">🔥</button>
+              <button type="button" class="react-btn hover:scale-125 transition-transform" data-emoji="🚀">🚀</button>
+            </div>
+          </div>
+          <span class="text-[10px] text-slate-400 dark:text-slate-500 font-mono ml-1">10:42 AM</span>
+        </div>
+      </div>
+
+      <!-- Bot Welcome Bubble 2: Tech Stack, Experience, Education, Certificate, Contact Email -->
+      <div class="msg-row bot-row flex items-start gap-3">
+        <div class="bot-avatar-mini w-8 h-8 rounded-full overflow-hidden flex-shrink-0 border border-blue-500/30">
+          <Image src={avatarImg} alt="Avatar" class="w-full h-full object-cover" width={64} height={64} />
+        </div>
+        <div class="msg-bubble-group max-w-[90%] sm:max-w-[82%] space-y-1">
+          <div class="msg-bubble bot-bubble p-4 rounded-2xl rounded-tl-sm bg-slate-100 dark:bg-slate-800/80 border border-black/5 dark:border-white/10 text-sm leading-relaxed text-slate-800 dark:text-slate-200 shadow-sm space-y-2.5">
+            <p class="font-semibold text-slate-900 dark:text-white">
+              {isVi ? 'Thông tin hồ sơ năng lực của Thái Tín Khang:' : "Overview of Thái Tín Khang's profile & background:"}
+            </p>
+            <div class="space-y-2 text-xs sm:text-sm pt-1 border-t border-black/5 dark:border-white/10">
+              <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+                <span class="font-semibold text-blue-600 dark:text-blue-400 min-w-[130px] flex-shrink-0">🛠️ Tech Stack:</span>
+                <span class="text-slate-700 dark:text-slate-300">TypeScript, JavaScript, Astro 7, Next.js, React, Tailwind CSS v4, GSAP 3 (ScrollTrigger, Timelines), Three.js, Node.js</span>
+              </div>
+              <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+                <span class="font-semibold text-blue-600 dark:text-blue-400 min-w-[130px] flex-shrink-0">💼 Work Experience:</span>
+                <span class="text-slate-700 dark:text-slate-300">
+                  <strong class="text-slate-900 dark:text-white font-medium">2023 – {isVi ? 'Hiện tại' : 'Present'}:</strong> {isVi ? 'Software Developer & Tech Content Creator (Chuyên sâu phát triển web hiện đại & kiến trúc hiệu năng cao)' : 'Software Developer & Tech Content Creator (Specialized in modern web engineering & high-performance UI)'}
+                </span>
+              </div>
+              <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+                <span class="font-semibold text-blue-600 dark:text-blue-400 min-w-[130px] flex-shrink-0">🎓 Education:</span>
+                <span class="text-slate-700 dark:text-slate-300">
+                  <strong class="text-slate-900 dark:text-white font-medium">2020 – 2024:</strong> {isVi ? 'Cử nhân Công nghệ Thông tin / Kỹ thuật Phần mềm' : 'B.S. in Information Technology / Software Engineering'}
+                </span>
+              </div>
+              <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+                <span class="font-semibold text-blue-600 dark:text-blue-400 min-w-[130px] flex-shrink-0">📜 Certificate:</span>
+                <span class="text-slate-700 dark:text-slate-300 inline-flex flex-wrap items-center gap-1.5">
+                  <span>{isVi ? 'Chứng chỉ Kỹ thuật Lập trình Web & Frontend Architecture (2024)' : 'Modern Web Engineering & Frontend Architecture (2024)'}</span>
+                  <a 
+                    href="https://linkedin.com/in/kinyias/details/certifications/" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 transition-all shadow-2xs"
+                  >
+                    <span>✓ {isVi ? 'Xác thực' : 'Verify'}</span>
+                    <span>↗</span>
+                  </a>
+                </span>
+              </div>
+              <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+                <span class="font-semibold text-blue-600 dark:text-blue-400 min-w-[130px] flex-shrink-0">✉️ Contact Email:</span>
+                <a href="mailto:kinyias.dev@gmail.com" class="text-blue-600 dark:text-blue-400 hover:underline font-mono font-medium">kinyias.dev@gmail.com</a>
+              </div>
+            </div>
+          </div>
+          <span class="text-[10px] text-slate-400 dark:text-slate-500 font-mono ml-1">10:42 AM</span>
+        </div>
+      </div>
+
+
+
+      <!-- Realtime dynamic messages appended here -->
+      <div id="dynamic-messages" class="space-y-4"></div>
+
+      <!-- Animated Typing Indicator (GSAP Bouncing Dots) -->
+      <div id="typing-indicator" class="msg-row bot-row flex items-start gap-3 hidden opacity-0">
+        <div class="bot-avatar-mini w-8 h-8 rounded-full overflow-hidden flex-shrink-0 border border-blue-500/30">
+          <Image src={avatarImg} alt="Avatar" class="w-full h-full object-cover" width={64} height={64} />
+        </div>
+        <div class="typing-bubble px-4 py-3 rounded-2xl rounded-tl-sm bg-slate-100 dark:bg-slate-800/80 border border-black/5 dark:border-white/10 flex items-center gap-1.5 shadow-sm">
+          <span class="typing-dot w-2 h-2 rounded-full bg-blue-500"></span>
+          <span class="typing-dot w-2 h-2 rounded-full bg-blue-500"></span>
+          <span class="typing-dot w-2 h-2 rounded-full bg-blue-500"></span>
+          <span class="text-xs text-slate-400 font-mono ml-2">
+            {isVi ? 'Khang đang phản hồi...' : 'Khang is typing...'}
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Quick Prompt Pills Carousel -->
+    <div class="chat-quick-prompts px-4 sm:px-6 py-2 bg-slate-50/70 dark:bg-white/[0.02] border-t border-black/5 dark:border-white/10 overflow-x-auto no-scrollbar flex items-center gap-2">
+      <span class="text-[10px] font-mono text-slate-400 uppercase tracking-wider flex-shrink-0 mr-1">
+        {isVi ? 'Gợi ý:' : 'Prompts:'}
+      </span>
+      {quickPrompts.map((item) => (
+        <button
+          type="button"
+          class="prompt-chip flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border border-black/10 dark:border-white/15 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-blue-500 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400 transition-all cursor-pointer whitespace-nowrap active:scale-95 shadow-xs"
+          data-prompt={item.prompt}
+          data-id={item.id}
+        >
+          {item.label}
+        </button>
+      ))}
+    </div>
+
+    <!-- Chat Input Bar -->
+    <div class="chat-input-bar px-4 sm:px-6 py-3 bg-white/90 dark:bg-[#0c101c]/95 border-t border-black/5 dark:border-white/10 backdrop-blur-xl">
+      <form id="chat-form" class="flex items-center gap-2 relative">
+        
+        <!-- Emoji trigger button -->
+        <div class="relative">
+          <button 
+            id="emoji-picker-toggle"
+            type="button" 
+            class="w-10 h-10 rounded-full flex items-center justify-center text-slate-500 hover:text-blue-500 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-lg cursor-pointer"
+            title="Send emoji reaction"
+          >
+            ✨
+          </button>
+          <!-- Floating emoji menu -->
+          <div id="emoji-popup" class="hidden absolute bottom-12 left-0 p-2 rounded-2xl bg-white dark:bg-slate-900 border border-black/10 dark:border-white/10 shadow-xl flex items-center gap-1.5 z-30">
+            <button type="button" class="quick-emoji text-xl hover:scale-130 transition-transform p-1 cursor-pointer" data-emoji="🔥">🔥</button>
+            <button type="button" class="quick-emoji text-xl hover:scale-130 transition-transform p-1 cursor-pointer" data-emoji="🚀">🚀</button>
+            <button type="button" class="quick-emoji text-xl hover:scale-130 transition-transform p-1 cursor-pointer" data-emoji="❤️">❤️</button>
+            <button type="button" class="quick-emoji text-xl hover:scale-130 transition-transform p-1 cursor-pointer" data-emoji="👏">👏</button>
+            <button type="button" class="quick-emoji text-xl hover:scale-130 transition-transform p-1 cursor-pointer" data-emoji="💯">💯</button>
+          </div>
+        </div>
+
+        <!-- Input text field -->
+        <div class="flex-1 relative">
+          <input 
+            id="chat-user-input"
+            type="text" 
+            placeholder={t('chat.inputPlaceholder')}
+            autocomplete="off"
+            class="w-full px-4 py-2.5 rounded-full bg-slate-100/80 dark:bg-slate-800/60 border border-transparent focus:border-blue-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 transition-all shadow-inner"
+          />
+        </div>
+
+        <!-- Send Button with GSAP spring action -->
+        <button 
+          id="chat-send-btn"
+          type="submit" 
+          class="send-btn inline-flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm transition-all shadow-md shadow-blue-600/30 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed group active:scale-95"
+        >
+          <span class="hidden sm:inline">{t('chat.send')}</span>
+          <span class="send-arrow transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">➤</span>
+        </button>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  /* Custom scrollbar suppression for horizontal prompt list */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .msg-row {
+    will-change: transform, opacity;
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+
+  // Sound Synthesizer using Web Audio API
+  class SimpleAudioFx {
+    private ctx: AudioContext | null = null;
+    public enabled: boolean = true;
+
+    private getContext(): AudioContext | null {
+      if (!this.enabled) return null;
+      if (!this.ctx && typeof window !== 'undefined') {
+        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioCtx) this.ctx = new AudioCtx();
+      }
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+      return this.ctx;
+    }
+
+    playSend() {
+      const ctx = this.getContext();
+      if (!ctx) return;
+      try {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(540, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12);
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.13);
+      } catch (e) {}
+    }
+
+    playReceive() {
+      const ctx = this.getContext();
+      if (!ctx) return;
+      try {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(700, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(420, ctx.currentTime + 0.18);
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.19);
+      } catch (e) {}
+    }
+
+    playReaction() {
+      const ctx = this.getContext();
+      if (!ctx) return;
+      try {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.07, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.16);
+      } catch (e) {}
+    }
+  }
+
+  const audioFx = new SimpleAudioFx();
+
+  // Knowledge base responses for the interactive assistant
+  const responsesEn: Record<string, string> = {
+    projects: "Khang's highlight works include: 🌟 **Aura Design Architecture** (smooth 3D tilt, responsive layouts), 🚀 **Jesper Landberg Kinetic Infinite Gallery** (velocity skew and momentum lerp), and ⚡ **Nexus OS** (glassmorphism workstation). Visit the Projects gallery to explore!",
+    stack: "Khang specializes in modern web engineering: 💻 **Core**: TypeScript, modern JS, HTML/CSS. 🚀 **Frameworks**: Astro, Next.js, Tailwind CSS v4. 🎨 **Motion**: GSAP 3 (ScrollTrigger, Timelines, Flip, Observer) & Three.js. ⚡ **Performance**: 100 Lighthouse score standards, GPU transform compositing.",
+    contact: "You can collaborate with Khang directly! ✉️ Reach out via email: **khang@example.com** or connect on GitHub [@kinyias](https://github.com/kinyias) and LinkedIn. Available for projects and software engineering roles!",
+    performance: "Here are 3 core GSAP performance rules Khang follows: 1️⃣ Always animate **transform aliases** (`x`, `y`, `scale`, `rotation`) and `autoAlpha` instead of top/left/width/height. 2️⃣ Use **`gsap.context()`** to eliminate memory leaks upon component unmount. 3️⃣ Avoid layout thrashing and composite on GPU.",
+    joke: "Why do programmers prefer dark mode? Because light attracts bugs! 🐛😄",
+    default: "Thanks for asking! Khang is focused on crafting digital experiences where high performance meets agency-grade aesthetics. How can I help you further?"
+  };
+
+  const responsesVi: Record<string, string> = {
+    projects: "Các dự án nổi bật của Khang bao gồm: 🌟 **Aura Design Architecture** (thẻ 3D nghiêng theo chuột), 🚀 **Jesper Kinetic Infinite Slider** (lướt vô tận với vận tốc quán tính), và ⚡ **Nexus OS** (giao diện máy trạm kính mờ hiện đại). Bạn có thể ghé thăm trang Dự án để trải nghiệm nhé!",
+    stack: "Tech stack thế mạnh của Khang: 💻 **Ngôn ngữ**: TypeScript, JavaScript hiện đại. 🚀 **Hệ sinh thái**: Astro, Next.js, Tailwind CSS v4. 🎨 **Chuyển động**: GSAP 3 (ScrollTrigger, Timelines, Observer) & Three.js. ⚡ **Chuẩn mực**: Đạt 100 điểm Google Lighthouse, tối ưu GPU composite.",
+    contact: "Bạn có thể kết nối với Khang rất nhanh chóng! ✉️ Email hợp tác hoặc kết nối qua GitHub [@kinyias](https://github.com/kinyias) và LinkedIn. Khang luôn sẵn sàng cho các dự án web đột phá!",
+    performance: "Bí quyết tối ưu 60FPS với GSAP: 1️⃣ Luôn dùng transform aliases (`x`, `y`, `scale`, `rotation`) để GPU render, tránh layout thrash. 2️⃣ Quản lý lifecycle chuẩn chỉ với `gsap.context()` để dọn dẹp tween khi đổi trang. 3️⃣ Giới hạn listener và kết hợp `will-change: transform`.",
+    joke: "Tại sao lập trình viên luôn thích bật giao diện Dark Mode? Vì ánh sáng sẽ thu hút bọ (bugs)! 🐛😆",
+    default: "Cảm ơn bạn đã trò chuyện! Khang luôn hướng tới việc xây dựng sản phẩm web với tốc độ cao nhất cùng thiết kế tinh tế. Bạn muốn khám phá thêm điều gì?"
+  };
+
+  function initChatPage() {
+    const rootEl = document.querySelector('.chat-pure-root') as HTMLElement;
+    if (!rootEl) return;
+    if (rootEl.dataset.initialized === 'true') return;
+    rootEl.dataset.initialized = 'true';
+
+    // Framework scoping via gsap.context
+    const ctx = gsap.context(() => {
+      
+      const mm = gsap.matchMedia();
+
+      mm.add(
+        {
+          isNormal: '(prefers-reduced-motion: no-preference)',
+          isReduced: '(prefers-reduced-motion: reduce)',
+        },
+        (context) => {
+          const { isReduced } = context.conditions as { isNormal: boolean; isReduced: boolean };
+
+          // ----------------------------------------------------
+          // 1. Initial Intro Entrance Timeline (gsap-core)
+          // ----------------------------------------------------
+          const initialBubbles = rootEl.querySelectorAll('.chat-messages-body > .msg-row');
+          const quickChips = rootEl.querySelectorAll('.prompt-chip');
+
+          const introTl = gsap.timeline({ defaults: { ease: 'back.out(1.4)' } });
+
+          if (!isReduced) {
+            introTl.from(initialBubbles, {
+              y: 24,
+              scale: 0.95,
+              autoAlpha: 0,
+              duration: 0.5,
+              stagger: 0.16,
+              clearProps: 'transform,visibility,opacity',
+            });
+
+            introTl.from(
+              quickChips,
+              {
+                scale: 0.8,
+                autoAlpha: 0,
+                y: 10,
+                stagger: 0.05,
+                duration: 0.35,
+                ease: 'power2.out',
+                clearProps: 'transform,visibility,opacity',
+              },
+              '-=0.2'
+            );
+          } else {
+            gsap.from(initialBubbles, { autoAlpha: 0, duration: 0.2 });
+          }
+
+          // ----------------------------------------------------
+          // 2. Typing Indicator Dots Animation (Infinite Loop)
+          // ----------------------------------------------------
+          const typingDots = rootEl.querySelectorAll('.typing-dot');
+          if (typingDots.length) {
+            gsap.to(typingDots, {
+              y: -5,
+              duration: 0.35,
+              repeat: -1,
+              yoyo: true,
+              stagger: 0.12,
+              ease: 'sine.inOut',
+            });
+          }
+
+
+          // ----------------------------------------------------
+          // 4. Interactive Chat Engine
+          // ----------------------------------------------------
+          const chatForm = rootEl.querySelector('#chat-form') as HTMLFormElement;
+          const userInput = rootEl.querySelector('#chat-user-input') as HTMLInputElement;
+          const dynamicContainer = rootEl.querySelector('#dynamic-messages') as HTMLElement;
+          const messagesScroll = rootEl.querySelector('#chat-messages-container') as HTMLElement;
+          const typingIndicator = rootEl.querySelector('#typing-indicator') as HTMLElement;
+          const sendBtn = rootEl.querySelector('#chat-send-btn') as HTMLElement;
+          const isViLocale = document.documentElement.lang === 'vi';
+
+          function scrollToBottom() {
+            if (!messagesScroll) return;
+            gsap.to(messagesScroll, {
+              scrollTop: messagesScroll.scrollHeight + 120,
+              duration: 0.45,
+              ease: 'power2.out',
+            });
+          }
+
+          function createMsgBubble(text: string, isUser: boolean) {
+            const row = document.createElement('div');
+            row.className = `msg-row ${isUser ? 'user-row flex justify-end' : 'bot-row flex items-start gap-3'}`;
+
+            const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            if (isUser) {
+              row.innerHTML = `
+                <div class="msg-bubble-group max-w-[85%] sm:max-w-[75%] space-y-1 text-right">
+                  <div class="msg-bubble user-bubble p-4 rounded-2xl rounded-tr-sm bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm leading-relaxed shadow-md shadow-blue-500/20 text-left">
+                    <p>${text}</p>
+                  </div>
+                  <span class="text-[10px] text-slate-400 font-mono mr-1">${nowTime}</span>
+                </div>
+              `;
+            } else {
+              row.innerHTML = `
+                <div class="bot-avatar-mini w-8 h-8 rounded-full overflow-hidden flex-shrink-0 border border-blue-500/30">
+                  <img src="${(avatarImg as any).src || '/favicon.svg'}" alt="Avatar" class="w-full h-full object-cover" />
+                </div>
+                <div class="msg-bubble-group max-w-[85%] sm:max-w-[75%] space-y-1">
+                  <div class="msg-bubble bot-bubble p-4 rounded-2xl rounded-tl-sm bg-slate-100 dark:bg-slate-800/80 border border-black/5 dark:border-white/10 text-sm leading-relaxed text-slate-800 dark:text-slate-200 shadow-sm relative group">
+                    <p>${text}</p>
+                    <div class="reaction-tray opacity-0 group-hover:opacity-100 transition-opacity absolute -bottom-3 right-2 flex items-center gap-1 bg-white dark:bg-slate-900 border border-black/10 dark:border-white/10 rounded-full px-2 py-0.5 shadow-md">
+                      <button type="button" class="react-btn hover:scale-125 transition-transform" data-emoji="❤️">❤️</button>
+                      <button type="button" class="react-btn hover:scale-125 transition-transform" data-emoji="🔥">🔥</button>
+                      <button type="button" class="react-btn hover:scale-125 transition-transform" data-emoji="🚀">🚀</button>
+                    </div>
+                  </div>
+                  <span class="text-[10px] text-slate-400 font-mono ml-1">${nowTime}</span>
+                </div>
+              `;
+            }
+
+            dynamicContainer.appendChild(row);
+
+            // Animate bubble entrance with GSAP
+            if (!isReduced) {
+              gsap.from(row, {
+                y: 20,
+                x: isUser ? 25 : -25,
+                scale: 0.9,
+                autoAlpha: 0,
+                duration: 0.45,
+                ease: 'back.out(1.5)',
+              });
+            } else {
+              gsap.from(row, { autoAlpha: 0, duration: 0.2 });
+            }
+
+            // Wire up reaction buttons inside newly created bubble
+            row.querySelectorAll('.react-btn').forEach((btn) => {
+              btn.addEventListener('click', (e) => {
+                const target = e.currentTarget as HTMLElement;
+                const emoji = target.getAttribute('data-emoji') || '❤️';
+                spawnFloatingReaction(target, emoji);
+              });
+            });
+
+            scrollToBottom();
+          }
+
+          function getBotReply(query: string): string {
+            const q = query.toLowerCase();
+            const source = isViLocale ? responsesVi : responsesEn;
+
+            if (q.includes('project') || q.includes('dự án') || q.includes('work') || q.includes('aura')) return source.projects;
+            if (q.includes('stack') || q.includes('tech') || q.includes('công nghệ') || q.includes('skill')) return source.stack;
+            if (q.includes('contact') || q.includes('liên hệ') || q.includes('hire') || q.includes('hợp tác') || q.includes('email')) return source.contact;
+            if (q.includes('perf') || q.includes('gsap') || q.includes('fps') || q.includes('hiệu năng') || q.includes('tối ưu')) return source.performance;
+            if (q.includes('joke') || q.includes('cười') || q.includes('vui')) return source.joke;
+
+            return source.default;
+          }
+
+          function handleUserSubmit(userText: string) {
+            if (!userText.trim()) return;
+
+            // Animate send button spring
+            if (sendBtn) {
+              gsap.fromTo(sendBtn, { scale: 0.88 }, { scale: 1, duration: 0.35, ease: 'elastic.out(1.2, 0.4)' });
+            }
+
+            // Audio FX
+            audioFx.playSend();
+
+            // Insert User Message
+            createMsgBubble(userText, true);
+
+            // Show Typing indicator with GSAP
+            if (typingIndicator) {
+              typingIndicator.classList.remove('hidden');
+              gsap.to(typingIndicator, {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.25,
+                ease: 'power2.out',
+              });
+              scrollToBottom();
+            }
+
+            // Simulated AI Thinking Delay
+            const thinkDelay = gsap.utils.random(500, 900);
+            setTimeout(() => {
+              if (typingIndicator) {
+                gsap.to(typingIndicator, {
+                  autoAlpha: 0,
+                  duration: 0.2,
+                  onComplete: () => typingIndicator.classList.add('hidden'),
+                });
+              }
+
+              audioFx.playReceive();
+              const reply = getBotReply(userText);
+              createMsgBubble(reply, false);
+            }, thinkDelay);
+          }
+
+          if (chatForm && userInput) {
+            chatForm.addEventListener('submit', (e) => {
+              e.preventDefault();
+              const text = userInput.value.trim();
+              if (!text) return;
+              userInput.value = '';
+              handleUserSubmit(text);
+            });
+          }
+
+          // Suggestion Prompt Chips Click
+          rootEl.querySelectorAll('.prompt-chip').forEach((chip) => {
+            chip.addEventListener('click', () => {
+              const prompt = chip.getAttribute('data-prompt') || chip.textContent?.trim() || '';
+              handleUserSubmit(prompt);
+            });
+          });
+
+          // Floating Reaction Physics
+          function spawnFloatingReaction(originEl: HTMLElement, emoji: string) {
+            audioFx.playReaction();
+            const rect = originEl.getBoundingClientRect();
+            const particle = document.createElement('div');
+            particle.textContent = emoji;
+            particle.className = 'fixed pointer-events-none z-50 text-2xl select-none';
+            particle.style.left = `${rect.left + rect.width / 2}px`;
+            particle.style.top = `${rect.top}px`;
+            document.body.appendChild(particle);
+
+            gsap.fromTo(
+              particle,
+              { scale: 0.6, autoAlpha: 1, y: 0, x: 0 },
+              {
+                y: gsap.utils.random(-80, -120),
+                x: gsap.utils.random(-30, 30),
+                scale: 1.6,
+                rotation: gsap.utils.random(-25, 25),
+                autoAlpha: 0,
+                duration: 1,
+                ease: 'power2.out',
+                onComplete: () => particle.remove(),
+              }
+            );
+          }
+
+          // Attach reaction triggers to static messages
+          rootEl.querySelectorAll('.react-btn').forEach((btn) => {
+            btn.addEventListener('click', (e) => {
+              const target = e.currentTarget as HTMLElement;
+              const emoji = target.getAttribute('data-emoji') || '❤️';
+              spawnFloatingReaction(target, emoji);
+            });
+          });
+
+          // Emoji Tray Popup
+          const emojiToggle = rootEl.querySelector('#emoji-picker-toggle') as HTMLElement;
+          const emojiPopup = rootEl.querySelector('#emoji-popup') as HTMLElement;
+          if (emojiToggle && emojiPopup) {
+            emojiToggle.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const isHidden = emojiPopup.classList.contains('hidden');
+              if (isHidden) {
+                emojiPopup.classList.remove('hidden');
+                gsap.fromTo(
+                  emojiPopup,
+                  { scale: 0.8, autoAlpha: 0, y: 10 },
+                  { scale: 1, autoAlpha: 1, y: 0, duration: 0.25, ease: 'back.out(1.5)' }
+                );
+              } else {
+                gsap.to(emojiPopup, {
+                  scale: 0.8,
+                  autoAlpha: 0,
+                  duration: 0.15,
+                  onComplete: () => emojiPopup.classList.add('hidden'),
+                });
+              }
+            });
+
+            document.addEventListener('click', () => {
+              if (!emojiPopup.classList.contains('hidden')) {
+                emojiPopup.classList.add('hidden');
+              }
+            });
+
+            emojiPopup.querySelectorAll('.quick-emoji').forEach((btn) => {
+              btn.addEventListener('click', () => {
+                const emoji = btn.getAttribute('data-emoji') || '🔥';
+                spawnFloatingReaction(btn as HTMLElement, emoji);
+                if (userInput) {
+                  userInput.value += ` ${emoji}`;
+                  userInput.focus();
+                }
+              });
+            });
+          }
+
+        }
+      );
+    }, rootEl);
+
+    // Astro lifecycle teardown on navigation (prevent memory leaks)
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        rootEl.dataset.initialized = 'false';
+        ctx.revert();
+      },
+      { once: true }
+    );
+  }
+
+  // Robust initialization
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initChatPage);
+  } else {
+    initChatPage();
+  }
+  document.addEventListener('astro:page-load', initChatPage);
+</script>
