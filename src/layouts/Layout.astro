@@ -1,6 +1,7 @@
 ---
 import LanguagePicker from "../components/LanguagePicker.astro";
 import ThemeToggle from "../components/ThemeToggle.astro";
+import BinaryBackground from "../components/BinaryBackground.astro";
 import { getLangFromUrl, useTranslations } from "../i18n/utils";
 import "../styles/global.css";
 
@@ -51,6 +52,9 @@ const t = useTranslations(lang);
     </script>
   </head>
   <body>
+    <!-- Waving Binary Background with Proximity Bloom & GSAP Animation -->
+    <BinaryBackground baseOpacity={0.22} hoverOpacity={0.88} waveRadius={360} />
+
     <!-- Corner Floating Utility Dock (Minimalist Developer Portfolio Spec) -->
     <header
       class="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 pointer-events-none"
@@ -98,6 +102,8 @@ const t = useTranslations(lang);
 
   /* Main Page Content - Clean vertical rhythm without bulky header */
   .page-content {
+    position: relative;
+    z-index: 10;
     flex: 1;
     max-width: 1100px;
     margin: 0 auto;

@@ -1,0 +1,370 @@
+---
+interface Props {
+  baseOpacity?: number;
+  hoverOpacity?: number;
+  waveRadius?: number;
+  className?: string;
+}
+
+const {
+  baseOpacity = 0.22,
+  hoverOpacity = 0.90,
+  waveRadius = 380,
+  className = "",
+} = Astro.props;
+---
+
+<div
+  class={`binary-bg-root ${className}`}
+  aria-hidden="true"
+  data-base-opacity={baseOpacity}
+  data-hover-opacity={hoverOpacity}
+  data-wave-radius={waveRadius}
+>
+  <canvas id="binary-canvas" class="binary-canvas-element"></canvas>
+</div>
+
+<script>
+  import { gsap } from "gsap";
+
+  function setupBinaryBackground() {
+    const root = document.querySelector(".binary-bg-root") as HTMLElement | null;
+    const canvas = document.getElementById("binary-canvas") as HTMLCanvasElement | null;
+    if (!root || !canvas) return;
+
+    if (root.dataset.initialized === "true") return;
+    root.dataset.initialized = "true";
+
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return;
+
+    const baseOpacityVal = parseFloat(root.dataset.baseOpacity || "0.22");
+    const hoverOpacityVal = parseFloat(root.dataset.hoverOpacity || "0.90");
+    const waveRadiusVal = parseFloat(root.dataset.waveRadius || "380");
+
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    let dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    // Monospace grid spacing
+    const colWidth = 26;
+    const rowHeight = 28;
+    let cols = Math.ceil(width / colWidth) + 1;
+    let rows = Math.ceil(height / rowHeight) + 1;
+    let totalCells = cols * rows;
+
+    let chars = new Uint8Array(totalCells);
+    for (let i = 0; i < totalCells; i++) {
+      chars[i] = Math.random() > 0.5 ? 1 : 0;
+    }
+
+    // Direct, bulletproof mouse tracking
+    const mouse = {
+      x: width * 0.5,
+      y: height * 0.35,
+      targetX: width * 0.5,
+      targetY: height * 0.35,
+      isHovering: true,
+      lastMoveTime: performance.now(),
+    };
+
+    // GSAP animated dynamics
+    const state = {
+      hoverIntensity: 1.0,
+      waveEnergy: 1.0,
+      shockwaveRadius: 0,
+      shockwaveStrength: 0,
+      shockwaveX: 0,
+      shockwaveY: 0,
+      time: 0,
+    };
+
+    // Dark mode check
+    let isDarkMode = document.documentElement.classList.contains("dark");
+    const themeObserver = new MutationObserver(() => {
+      isDarkMode = document.documentElement.classList.contains("dark");
+    });
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class", "data-theme"],
+    });
+
+    function resizeCanvas() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+
+      cols = Math.ceil(width / colWidth) + 1;
+      rows = Math.ceil(height / rowHeight) + 1;
+      totalCells = cols * rows;
+
+      const newChars = new Uint8Array(totalCells);
+      for (let i = 0; i < totalCells; i++) {
+        newChars[i] = i < chars.length ? chars[i] : (Math.random() > 0.5 ? 1 : 0);
+      }
+      chars = newChars;
+    }
+
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas, { passive: true });
+
+    // Track mouse coordinates across all event types
+    const onMouseMove = (e: MouseEvent | PointerEvent) => {
+      mouse.targetX = e.clientX;
+      mouse.targetY = e.clientY;
+      mouse.isHovering = true;
+      mouse.lastMoveTime = performance.now();
+
+      // Ensure full hover intensity
+      if (state.hoverIntensity < 0.99) {
+        gsap.to(state, {
+          hoverIntensity: 1,
+          duration: 0.2,
+          ease: "power2.out",
+          overwrite: "auto",
+        });
+      }
+
+      // Dynamic wave surge while moving
+      gsap.to(state, {
+        waveEnergy: 1.4,
+        duration: 0.1,
+        overwrite: "auto",
+        onComplete: () => {
+          gsap.to(state, {
+            waveEnergy: 1.0,
+            duration: 0.6,
+            ease: "power2.out",
+          });
+        },
+      });
+    };
+
+    // Shockwave ripple on click / tap
+    const onMouseDown = (e: MouseEvent) => {
+      state.shockwaveX = e.clientX;
+      state.shockwaveY = e.clientY;
+      state.shockwaveRadius = 10;
+      state.shockwaveStrength = 1.0;
+
+      gsap.killTweensOf(state, "shockwaveRadius,shockwaveStrength");
+      gsap.to(state, {
+        shockwaveRadius: 600,
+        shockwaveStrength: 0,
+        duration: 0.9,
+        ease: "power2.out",
+      });
+    };
+
+    window.addEventListener("pointermove", onMouseMove, { passive: true });
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+    document.addEventListener("pointermove", onMouseMove, { passive: true });
+    document.addEventListener("mousemove", onMouseMove, { passive: true });
+    window.addEventListener("mousedown", onMouseDown, { passive: true });
+
+    let frameCount = 0;
+
+    // Render loop powered by GSAP ticker
+    const render = (_time: number, deltaTime: number) => {
+      if (!ctx || width === 0 || height === 0) return;
+
+      const dt = Math.min(deltaTime, 33) * 0.001;
+      state.time += dt;
+      const t = state.time;
+
+      // Smooth lag-free mouse interpolation (lerp)
+      mouse.x += (mouse.targetX - mouse.x) * 0.2;
+      mouse.y += (mouse.targetY - mouse.y) * 0.2;
+
+      // Scramble / flip bits in memory
+      frameCount++;
+      if (frameCount % 2 === 0 && totalCells > 0) {
+        for (let k = 0; k < 3; k++) {
+          const idx = Math.floor(Math.random() * totalCells);
+          chars[idx] = chars[idx] ? 0 : 1;
+        }
+      }
+
+      ctx.clearRect(0, 0, width, height);
+
+      const baseAlpha = isDarkMode ? baseOpacityVal : baseOpacityVal * 0.85;
+      const hoverMaxAlpha = isDarkMode ? hoverOpacityVal : hoverOpacityVal * 0.85;
+
+      const baseFont = '600 13px "JetBrains Mono", ui-monospace, monospace';
+      const bloomFont = '700 15px "JetBrains Mono", ui-monospace, monospace';
+      ctx.font = baseFont;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      const radius = waveRadiusVal;
+      const radiusSq = radius * radius;
+      const mX = mouse.x;
+      const mY = mouse.y;
+      const intensity = state.hoverIntensity;
+      const energy = state.waveEnergy;
+
+      const baseStyle = isDarkMode
+        ? `rgba(148, 163, 184, ${baseAlpha.toFixed(3)})`
+        : `rgba(71, 85, 105, ${baseAlpha.toFixed(3)})`;
+
+      ctx.fillStyle = baseStyle;
+
+      for (let r = 0; r < rows; r++) {
+        const baseY = r * rowHeight + rowHeight * 0.5;
+        if (baseY < -60 || baseY > height + 60) continue;
+
+        for (let c = 0; c < cols; c++) {
+          const baseX = c * colWidth + colWidth * 0.5;
+          const char = chars[r * cols + c] ? "1" : "0";
+
+          // 1. Ambient undulating ocean wave (always running across the page)
+          const ambientY = Math.sin(c * 0.16 + t * 2.4) * 8 + Math.cos(r * 0.12 + t * 1.8) * 6;
+          const ambientX = Math.sin(r * 0.14 + t * 1.6) * 5;
+
+          // 2. Interactive hover waving disturbance
+          const dx = baseX - mX;
+          const dy = baseY - mY;
+          const distSq = dx * dx + dy * dy;
+
+          let hoverWaveX = 0;
+          let hoverWaveY = 0;
+          let isBloom = false;
+          let proximity = 0;
+
+          if (distSq < radiusSq) {
+            const dist = Math.sqrt(distSq);
+            proximity = 1 - dist / radius; // 1 at cursor, 0 at edge
+            const smoothP = proximity * proximity * (3 - 2 * proximity); // smoothstep
+
+            // Concentric radiating ripples spreading outward from mouse
+            const travelWave = Math.sin(dist * 0.045 - t * 7.5);
+
+            // Transverse fluid wave rolling along rows & columns
+            const crossWave = Math.sin(c * 0.35 + dist * 0.02 - t * 5.0);
+
+            // Total wave height: up to ±38px undulating displacement!
+            hoverWaveY = (travelWave * 26 + crossWave * 16) * smoothP * energy * intensity;
+            hoverWaveX = Math.cos(dist * 0.04 - t * 6.0) * 14 * smoothP * energy * intensity;
+
+            isBloom = true;
+          }
+
+          // 3. Shockwave ripple on click / tap
+          if (state.shockwaveStrength > 0.01) {
+            const sDx = baseX - state.shockwaveX;
+            const sDy = baseY - state.shockwaveY;
+            const sDist = Math.sqrt(sDx * sDx + sDy * sDy);
+            const distFromFront = Math.abs(sDist - state.shockwaveRadius);
+
+            if (distFromFront < 70) {
+              const shockP = (1 - distFromFront / 70) * state.shockwaveStrength;
+              const shockAmp = Math.sin(distFromFront * 0.08) * 32 * shockP;
+              hoverWaveY += shockAmp;
+              hoverWaveX += (sDx / (sDist + 1)) * shockAmp * 0.5;
+              isBloom = true;
+              proximity = Math.max(proximity, shockP);
+            }
+          }
+
+          if (isBloom) {
+            const bloom = Math.pow(proximity, 1.2) * intensity;
+            const currentAlpha = Math.min(1.0, baseAlpha + bloom * (hoverMaxAlpha - baseAlpha));
+
+            if (proximity > 0.5) {
+              ctx.font = bloomFont;
+            }
+
+            if (isDarkMode) {
+              if (proximity > 0.6) {
+                ctx.fillStyle = `rgba(240, 249, 255, ${currentAlpha.toFixed(3)})`; // luminous white-cyan core
+              } else {
+                ctx.fillStyle = `rgba(56, 189, 248, ${currentAlpha.toFixed(3)})`; // electric sky cyan
+              }
+            } else {
+              if (proximity > 0.6) {
+                ctx.fillStyle = `rgba(29, 78, 216, ${currentAlpha.toFixed(3)})`; // royal blue core
+              } else {
+                ctx.fillStyle = `rgba(37, 99, 235, ${currentAlpha.toFixed(3)})`; // electric cobalt blue
+              }
+            }
+
+            ctx.fillText(char, baseX + ambientX + hoverWaveX, baseY + ambientY + hoverWaveY);
+
+            // Restore base settings
+            ctx.fillStyle = baseStyle;
+            if (proximity > 0.5) {
+              ctx.font = baseFont;
+            }
+          } else {
+            ctx.fillText(char, baseX + ambientX, baseY + ambientY);
+          }
+        }
+      }
+    };
+
+    gsap.ticker.add(render);
+
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        gsap.ticker.remove(render);
+      } else {
+        gsap.ticker.add(render);
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    document.addEventListener(
+      "astro:before-swap",
+      () => {
+        gsap.ticker.remove(render);
+        window.removeEventListener("resize", resizeCanvas);
+        window.removeEventListener("pointermove", onMouseMove);
+        window.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("pointermove", onMouseMove);
+        document.removeEventListener("mousemove", onMouseMove);
+        window.removeEventListener("mousedown", onMouseDown);
+        document.removeEventListener("visibilitychange", onVisibilityChange);
+        themeObserver.disconnect();
+      },
+      { once: true }
+    );
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupBinaryBackground);
+  } else {
+    setupBinaryBackground();
+  }
+
+  document.addEventListener("astro:page-load", setupBinaryBackground);
+</script>
+
+<style>
+  .binary-bg-root {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    user-select: none;
+    touch-action: none;
+    overflow: hidden;
+  }
+
+  .binary-canvas-element {
+    width: 100%;
+    height: 100%;
+    display: block;
+    will-change: transform;
+    pointer-events: none;
+  }
+</style>
