@@ -39,6 +39,8 @@ export const ui = {
     'widget.chatWithMe': 'Chat with Khang',
     'widget.tooltip': '👋 Need help? Ask anything!',
     'widget.openFull': 'Open full chat page',
+    'widget.maximize': 'Maximize chat',
+    'widget.minimize': 'Restore chat',
     'widget.close': 'Close chat',
   },
   vi: {
@@ -73,6 +75,8 @@ export const ui = {
     'widget.chatWithMe': 'Trò chuyện cùng Khang',
     'widget.tooltip': '👋 Cần hỏi gì? Nhắn với Khang nhé!',
     'widget.openFull': 'Mở toàn trang chat',
+    'widget.maximize': 'Phóng to cửa sổ chat',
+    'widget.minimize': 'Thu nhỏ cửa sổ chat',
     'widget.close': 'Đóng chat',
   },
 } as const;
