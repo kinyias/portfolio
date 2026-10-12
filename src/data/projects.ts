@@ -4,7 +4,7 @@ import spatialImg from '../assets/images/projects/spatial-3d.jpg';
 import hyperflowImg from '../assets/images/projects/hyperflow.jpg';
 import aiAgentImg from '../assets/images/projects/ai-orchestrator.jpg';
 import zenithImg from '../assets/images/projects/zenith-audio.jpg';
-import auraImg from '../assets/images/projects/aura-design.jpg';
+import tkhangFashionImg from '../assets/images/projects/tkhang-fashion.png';
 
 export interface ProjectItem {
   id: string;
@@ -187,34 +187,36 @@ export const projectsData: ProjectItem[] = [
     }
   },
   {
-    id: 'aura-design',
+    id: 'tkhang-fashion',
     num: '06',
-    title: 'Aura Design System',
-    category: 'Design Engineering',
+    title: 'TKhang - Men Fashion',
+    category: 'E-Commerce & AI Platform',
     year: '2025',
     tagline: {
-      en: 'Swiss Typographic UI Architecture & Strict Semantic Token Engine',
-      vi: 'Kiến trúc giao diện Swiss Typography & Động cơ Token ngữ nghĩa'
+      en: 'Modern Men\'s Fashion E-Commerce Platform Powered by Next.js 15 & Gemini AI',
+      vi: 'Nền tảng Thương mại Điện tử Thời trang Nam Hiện đại với Next.js 15 & Gemini AI'
     },
     description: {
-      en: 'An enterprise-grade open-source design system fusing Swiss grid discipline with Tailwind CSS v4 and fluid mathematical typography scales. Built for engineering teams obsessed with craftsmanship.',
-      vi: 'Hệ thống thiết kế mã nguồn mở chuẩn mực kết hợp giữa triết lý lưới Thụy Sĩ, Tailwind CSS v4 và tỷ lệ typography toán học linh hoạt. Tạo dựng cho các đội ngũ đề cao độ hoàn thiện đỉnh cao.'
+      en: 'A modern, full-featured men\'s fashion e-commerce platform built with Next.js 15 App Router, PostgreSQL, and Gemini AI. Features smart full-text synonym search, multi-gateway payments (COD, VNPay, MoMo), automated size suggestions, and an intelligent analytics admin dashboard.',
+      vi: 'Website thương mại điện tử chuyên bán thời trang nam được xây dựng bằng Next.js 15 App Router, PostgreSQL và Gemini AI. Cung cấp tìm kiếm ngữ nghĩa theo từ đồng nghĩa, thanh toán đa cổng (COD, VNPay, MoMo), AI gợi ý chọn size và trang quản trị phân tích số liệu.'
     },
-    image: auraImg,
-    tags: ['Tailwind CSS v4', 'Design Tokens', 'GSAP Motion', 'Storybook', 'Astro'],
-    metrics: '100/100 Lighthouse • W3C Semantic Spec',
-    demoUrl: 'https://github.com/kinyias',
-    githubUrl: 'https://github.com/kinyias',
+    image: tkhangFashionImg,
+    tags: ['Next.js 15', 'TypeScript', 'Tailwind CSS', 'PostgreSQL', 'Gemini AI', 'Zustand', 'Shadcn/ui'],
+    metrics: 'Next.js 15 App Router • Gemini AI • Multi-Payment',
+    demoUrl: 'https://tkhang-fashion.vercel.app/',
+    githubUrl: 'https://github.com/kinyias/Men-Fashion',
     highlights: {
       en: [
-        'Zero-runtime CSS variables token architecture with dark/light calibration',
-        'Fully accessible ARIA compliant primitives tested across screen readers',
-        'Integrated GSAP micro-motion presets with reduced-motion fallbacks'
+        'Generative AI features: Automated product descriptions, intelligent size recommendation, review moderation, and customer support chatbot',
+        'Smart search & filtering: High-speed full-text search, synonym query expansion, and faceted filters (price, size, color, brand)',
+        'Omnichannel payments & logistics: Integrated COD, VNPay, and MoMo with automated ViettelPost shipping rates calculation',
+        'Decoupled scalable architecture: Next.js 15 App Router SSR/SSG coupled with dedicated REST API backend'
       ],
       vi: [
-        'Kiến trúc token CSS biến thể không phát sinh runtime với tinh chỉnh sáng/tối tối ưu',
-        'Các thành phần nguyên thủy tuân thủ nghiêm ngặt tiêu chuẩn ARIA tiếp cận',
-        'Bộ preset chuyển động vi mô GSAP tích hợp sẵn chế độ giảm chuyển động an toàn'
+        'Ứng dụng AI thông minh: Tự động tạo mô tả sản phẩm bằng Gemini, gợi ý chọn size, duyệt đánh giá tự động và chatbot hỗ trợ',
+        'Tìm kiếm & bộ lọc thông minh: Tìm kiếm full-text search, hỗ trợ từ đồng nghĩa cùng bộ lọc đa chiều (giá, size, màu sắc, thương hiệu)',
+        'Thanh toán đa cổng & vận chuyển: Tích hợp COD, VNPay, MoMo kết hợp tính phí giao hàng tự động với ViettelPost',
+        'Kiến trúc tối ưu hiệu năng: SSR/SSG với Next.js 15 App Router kết hợp backend API riêng biệt'
       ]
     }
   }
