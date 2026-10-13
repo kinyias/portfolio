@@ -1,0 +1,104 @@
+---
+import type { BlogPost } from '../../utils/blogApi';
+import { useTranslations, useTranslatedPath, type Lang } from '../../i18n/utils';
+
+interface Props {
+  post: BlogPost;
+  lang: Lang;
+}
+
+const { post, lang } = Astro.props;
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+
+const postUrl = translatePath(`/blog/${post.slug}`);
+const formattedDate = post.publishedAt
+  ? new Intl.DateTimeFormat(lang === 'vi' ? 'vi-VN' : 'en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }).format(new Date(post.publishedAt))
+  : null;
+---
+
+<div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-white via-white to-blue-50/50 dark:from-[#111726] dark:via-[#111726] dark:to-[#172138] border border-black/10 dark:border-white/10 shadow-xl group">
+  <!-- Ambient background glow behind featured card -->
+  <div class="absolute -top-24 -right-24 w-96 h-96 bg-blue-500/10 dark:bg-blue-600/15 rounded-full blur-3xl pointer-events-none"></div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center p-6 sm:p-8 lg:p-10 relative z-10">
+    <!-- Featured Image Column -->
+    <div class="lg:col-span-6 overflow-hidden rounded-2xl relative aspect-[16/10] bg-slate-900 border border-black/5 dark:border-white/10">
+      {
+        post.coverImage ? (
+          <img
+            src={post.coverImage}
+            alt={post.title}
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        ) : (
+          <div class="w-full h-full bg-gradient-to-tr from-slate-950 to-blue-950 flex items-center justify-center p-6">
+            <span class="font-mono text-3xl font-extrabold text-blue-400/50">FEATURED</span>
+          </div>
+        )
+      }
+      <!-- Featured Floating Label -->
+      <div class="absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-blue-600 text-white shadow-md">
+        <span>★</span>
+        <span>{t('blog.featuredTitle')}</span>
+      </div>
+    </div>
+
+    <!-- Featured Details Column -->
+    <div class="lg:col-span-6 flex flex-col justify-center">
+      <!-- Category & Reading time -->
+      <div class="flex items-center gap-3 text-xs font-mono text-slate-500 dark:text-slate-400 mb-3">
+        {
+          post.category && (
+            <span class="px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 font-medium">
+              {post.category.name}
+            </span>
+          )
+        }
+        <span>&bull;</span>
+        <span>{post.readingTime} {t('blog.readTime')}</span>
+      </div>
+
+      <!-- Title -->
+      <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.2] mb-4 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+        <a href={postUrl}>
+          {post.title}
+        </a>
+      </h2>
+
+      <!-- Excerpt -->
+      {
+        post.excerpt && (
+          <p class="text-base text-slate-600 dark:text-slate-400 leading-relaxed mb-6 line-clamp-3">
+            {post.excerpt}
+          </p>
+        )
+      }
+
+      <!-- Bottom action and author info -->
+      <div class="flex items-center justify-between gap-4 pt-4 border-t border-black/5 dark:border-white/10">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-mono text-xs font-bold shadow-xs">
+            TK
+          </div>
+          <div class="flex flex-col text-xs">
+            <span class="font-semibold text-slate-900 dark:text-white">{post.authorName}</span>
+            {formattedDate && <span class="text-slate-500 dark:text-slate-400">{formattedDate}</span>}
+          </div>
+        </div>
+
+        <a
+          href={postUrl}
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold bg-slate-900 text-white dark:bg-white dark:text-slate-950 hover:bg-blue-600 dark:hover:bg-blue-400 dark:hover:text-slate-950 transition-all duration-300 shadow-sm"
+        >
+          <span>{t('blog.readArticle')}</span>
+          <span class="transition-transform group-hover:translate-x-0.5">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

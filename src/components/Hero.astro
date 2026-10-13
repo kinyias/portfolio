@@ -69,7 +69,7 @@ const translatePath = useTranslatedPath(lang);
       </p>
 
       <!-- Action Buttons (Nested Island Architecture) -->
-      <div class="flex flex-wrap items-center gap-4 mb-10">
+      <div class="flex flex-wrap items-center gap-3.5 mb-10">
         <a href={translatePath("/projects")} class="island-cta-primary group">
           <span class="font-medium tracking-tight text-sm text-white"
             >{t("hero.viewProjects")}</span
@@ -79,6 +79,13 @@ const translatePath = useTranslatedPath(lang);
               class="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
               >↗</span
             >
+          </span>
+        </a>
+
+        <a href={translatePath("/blog")} class="island-cta-secondary group">
+          <span class="font-medium tracking-tight text-sm flex items-center gap-1.5">
+            <span>📝</span>
+            <span>{t("nav.blog")}</span>
           </span>
         </a>
 

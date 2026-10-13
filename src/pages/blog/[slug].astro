@@ -1,0 +1,342 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro';
+import {
+  fetchBlogPosts,
+  fetchBlogPostBySlug,
+  type BlogPost,
+  FALLBACK_BLOG_POSTS,
+} from '../../utils/blogApi';
+import { renderArticleMarkdown } from '../../utils/markdown';
+import { useTranslations, useTranslatedPath } from '../../i18n/utils';
+
+export async function getStaticPaths() {
+  const lang = 'en';
+  try {
+    const { data } = await fetchBlogPosts({ lang, limit: 100 });
+    if (data && data.length > 0) {
+      return data.map((post) => ({
+        params: { slug: post.slug },
+        props: { post },
+      }));
+    }
+  } catch (_e) {
+    // fallback
+  }
+
+  // Fallback static paths
+  const fallbackEn = FALLBACK_BLOG_POSTS.filter((p) => p.lang === 'en');
+  return fallbackEn.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post?: BlogPost;
+}
+
+const { slug } = Astro.params;
+const lang = 'en';
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+
+// Load post (prefer prop, or fetch with view increment)
+let post = Astro.props.post;
+if (!post && slug) {
+  post = (await fetchBlogPostBySlug(slug, true)) || undefined;
+}
+
+if (!post) {
+  return Astro.redirect(translatePath('/blog'));
+}
+
+const { html: renderedHtml, toc } = renderArticleMarkdown(post.content);
+
+const formattedDate = post.publishedAt
+  ? new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }).format(new Date(post.publishedAt))
+  : null;
+
+const alternateUrl = post.alternate?.slug
+  ? post.alternate.lang === 'vi'
+    ? `/vi/blog/${post.alternate.slug}`
+    : `/blog/${post.alternate.slug}`
+  : null;
+---
+
+<BlogLayout
+  title={`${post.title} — Thái Tín Khang`}
+  description={post.excerpt || 'Technical article by Thái Tín Khang (@kinyias)'}
+  coverImage={post.coverImage}
+  publishedTime={post.publishedAt}
+  authorName={post.authorName}
+  alternate={post.alternate}
+  isArticle={true}
+>
+  <article class="w-full py-2">
+    <!-- Breadcrumb & Top Bar -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+      <a
+        href={translatePath('/blog')}
+        class="inline-flex items-center gap-2 text-xs font-mono font-medium text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition-colors group"
+      >
+        <span class="transition-transform group-hover:-translate-x-1">←</span>
+        <span>{t('blog.backToBlog')}</span>
+      </a>
+
+      <!-- Direct Language Switcher Pill -->
+      {
+        alternateUrl && post.alternate && (
+          <a
+            href={alternateUrl}
+            class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/30 hover:bg-blue-500/20 transition-all shadow-xs"
+          >
+            <span>🇻🇳</span>
+            <span>Đọc bản Tiếng Việt</span>
+            <span>→</span>
+          </a>
+        )
+      }
+    </div>
+
+    <!-- Article Header -->
+    <header class="mb-10 max-w-4xl">
+      <!-- Category & Reading time -->
+      <div class="flex flex-wrap items-center gap-3 text-xs font-mono text-slate-500 dark:text-slate-400 mb-4">
+        {
+          post.category && (
+            <span class="px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 font-medium">
+              {post.category.name}
+            </span>
+          )
+        }
+        <span>&bull;</span>
+        <span>{post.readingTime} {t('blog.readTime')}</span>
+      </div>
+
+      <!-- Title -->
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.18] mb-6">
+        {post.title}
+      </h1>
+
+      <!-- Excerpt -->
+      {
+        post.excerpt && (
+          <p class="text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-normal mb-6 text-pretty">
+            {post.excerpt}
+          </p>
+        )
+      }
+
+      <!-- Author and Date Meta Row -->
+      <div class="flex flex-wrap items-center justify-between gap-4 py-4 border-y border-black/5 dark:border-white/10 text-xs text-slate-500 dark:text-slate-400 font-mono">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold font-sans text-xs shadow-xs">
+            TK
+          </div>
+          <div class="flex flex-col">
+            <span class="font-semibold text-slate-900 dark:text-white font-sans">{post.authorName}</span>
+            {formattedDate && <span>{t('blog.publishedOn')} {formattedDate}</span>}
+          </div>
+        </div>
+
+        <!-- Quick Share Bar -->
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            id="share-copy-btn"
+            class="px-3 py-1.5 rounded-lg bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/10 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 transition-colors flex items-center gap-1.5 cursor-pointer"
+            aria-label="Copy link"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span id="share-copy-label">Copy link</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Cover Image Banner -->
+    {
+      post.coverImage && (
+        <div class="mb-12 rounded-3xl overflow-hidden aspect-[21/9] max-h-[460px] bg-slate-900 border border-black/5 dark:border-white/10 shadow-lg">
+          <img
+            src={post.coverImage}
+            alt={post.title}
+            class="w-full h-full object-cover"
+          />
+        </div>
+      )
+    }
+
+    <!-- Reading Stage: Article Content & Sticky TOC Sidebar -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
+      <!-- Main Content Column -->
+      <div class="lg:col-span-8 min-w-0">
+        <!-- Rendered Article Markdown -->
+        <div class="article-body prose-dark" set:html={renderedHtml} />
+
+        <!-- Tags Cloud -->
+        {
+          post.tags && post.tags.length > 0 && (
+            <div class="mt-12 pt-6 border-t border-black/10 dark:border-white/10 flex flex-wrap items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 mr-2">Tags:</span>
+              {post.tags.map((tag) => (
+                <span class="px-2.5 py-1 rounded-md text-xs font-mono bg-black/[0.04] dark:bg-white/[0.06] text-slate-600 dark:text-slate-400">
+                  #{tag.name}
+                </span>
+              ))}
+            </div>
+          )
+        }
+
+        <!-- Bottom Back Button -->
+        <div class="mt-10 pt-6 border-t border-black/5 dark:border-white/5 flex items-center justify-between">
+          <a
+            href={translatePath('/blog')}
+            class="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            ← {t('blog.backToBlog')}
+          </a>
+
+          {
+            alternateUrl && (
+              <a
+                href={alternateUrl}
+                class="inline-flex items-center gap-1.5 text-xs font-mono text-slate-500 hover:text-blue-500 transition-colors"
+              >
+                <span>{t('blog.readInAlternate')} Tiếng Việt</span>
+                <span>→</span>
+              </a>
+            )
+          }
+        </div>
+      </div>
+
+      <!-- Sticky Sidebar Column -->
+      <aside class="lg:col-span-4 hidden lg:block">
+        <div class="sticky top-24 space-y-6">
+          <!-- Table of Contents Card -->
+          {
+            toc && toc.length > 0 && (
+              <div class="p-5 rounded-2xl bg-white/60 dark:bg-[#111726]/60 backdrop-blur-md border border-black/5 dark:border-white/10 shadow-xs">
+                <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-2">
+                  <span>📑</span>
+                  <span>{t('blog.tableOfContents')}</span>
+                </h3>
+                <nav class="space-y-1.5 text-xs max-h-[50vh] overflow-y-auto scrollbar-none pr-1">
+                  {toc.map((item) => (
+                    <a
+                      href={`#${item.id}`}
+                      class={`toc-link block py-1 transition-colors hover:text-blue-600 dark:hover:text-blue-400 leading-snug ${
+                        item.level === 3 ? 'pl-4 text-slate-500 dark:text-slate-400' : 'text-slate-700 dark:text-slate-300 font-medium'
+                      }`}
+                    >
+                      {item.text}
+                    </a>
+                  ))}
+                </nav>
+              </div>
+            )
+          }
+
+          <!-- Alternate Language Card -->
+          {
+            alternateUrl && post.alternate && (
+              <div class="p-5 rounded-2xl bg-gradient-to-br from-blue-500/10 to-indigo-500/10 border border-blue-500/20">
+                <div class="flex items-center gap-2 text-xs font-mono font-semibold text-blue-600 dark:text-blue-400 mb-1.5">
+                  <span>🌐</span>
+                  <span>Multilingual Edition</span>
+                </div>
+                <p class="text-xs text-slate-600 dark:text-slate-300 mb-3 leading-relaxed">
+                  This article is also published in Vietnamese:
+                </p>
+                <a
+                  href={alternateUrl}
+                  class="block p-2.5 rounded-xl bg-white/80 dark:bg-[#0b0f19]/80 border border-blue-500/20 text-xs font-medium text-blue-600 dark:text-blue-400 hover:border-blue-500 transition-all group"
+                >
+                  <span class="line-clamp-2 leading-snug group-hover:underline">
+                    {post.alternate.title}
+                  </span>
+                  <span class="inline-flex items-center gap-1 text-[11px] font-mono text-slate-500 mt-1">
+                    <span>Đọc tiếng Việt</span>
+                    <span class="group-hover:translate-x-1 transition-transform">→</span>
+                  </span>
+                </a>
+              </div>
+            )
+          }
+
+          <!-- Author Bio Widget -->
+          <div class="p-5 rounded-2xl bg-white/60 dark:bg-[#111726]/60 backdrop-blur-md border border-black/5 dark:border-white/10 shadow-xs">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-mono font-bold text-sm shadow-md">
+                TK
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-slate-900 dark:text-white leading-tight">
+                  Thái Tín Khang
+                </h4>
+                <p class="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                  @kinyias
+                </p>
+              </div>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              {t('blog.authorBio')}
+            </p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </article>
+</BlogLayout>
+
+<script>
+  // Copy Link with toast feedback
+  const copyBtn = document.getElementById('share-copy-btn');
+  const copyLabel = document.getElementById('share-copy-label');
+  if (copyBtn && copyLabel) {
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        copyLabel.textContent = 'Copied!';
+        copyBtn.classList.add('text-emerald-500');
+        setTimeout(() => {
+          copyLabel.textContent = 'Copy link';
+          copyBtn.classList.remove('text-emerald-500');
+        }, 2000);
+      });
+    });
+  }
+
+  // Active TOC scrollspy
+  const headings = Array.from(document.querySelectorAll('h2[id], h3[id]')) as HTMLElement[];
+  const tocLinks = Array.from(document.querySelectorAll('.toc-link')) as HTMLAnchorElement[];
+
+  if (headings.length > 0 && tocLinks.length > 0) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.getAttribute('id');
+            tocLinks.forEach((link) => {
+              if (link.getAttribute('href') === `#${id}`) {
+                link.classList.add('text-blue-600', 'dark:text-blue-400', 'font-semibold');
+              } else {
+                link.classList.remove('text-blue-600', 'dark:text-blue-400', 'font-semibold');
+              }
+            });
+          }
+        });
+      },
+      { rootMargin: '0px 0px -70% 0px' }
+    );
+
+    headings.forEach((h) => observer.observe(h));
+  }
+</script>

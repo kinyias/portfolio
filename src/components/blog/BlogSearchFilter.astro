@@ -1,0 +1,194 @@
+---
+import type { BlogCategory } from '../../utils/blogApi';
+import { useTranslations, type Lang } from '../../i18n/utils';
+
+interface Props {
+  categories: BlogCategory[];
+  lang: Lang;
+  totalPosts: number;
+}
+
+const { categories, lang, totalPosts } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<div class="blog-search-filter-wrapper space-y-5 mb-10">
+  <!-- Search input and Sort selector row -->
+  <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+    <!-- Search Bar -->
+    <div class="relative flex-1">
+      <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
+
+      <input
+        type="text"
+        id="blog-search-input"
+        placeholder={t('blog.searchPlaceholder')}
+        class="w-full pl-10 pr-10 py-2.5 rounded-xl text-sm bg-white/80 dark:bg-[#111726]/80 backdrop-blur-md border border-black/10 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all shadow-xs"
+        autocomplete="off"
+      />
+
+      <button
+        type="button"
+        id="blog-search-clear"
+        class="hidden absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+        aria-label="Clear search"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Sort selector -->
+    <div class="flex items-center gap-2 self-end sm:self-auto">
+      <label for="blog-sort-select" class="text-xs font-mono text-slate-500 dark:text-slate-400 hidden sm:inline">
+        Sort:
+      </label>
+      <select
+        id="blog-sort-select"
+        class="px-3 py-2 rounded-xl text-xs font-mono bg-white/80 dark:bg-[#111726]/80 backdrop-blur-md border border-black/10 dark:border-white/10 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer shadow-xs"
+      >
+        <option value="latest">{lang === 'vi' ? 'Mới nhất' : 'Latest'}</option>
+        <option value="oldest">{lang === 'vi' ? 'Cũ nhất' : 'Oldest'}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Category Pills Row -->
+  <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none" id="category-pills-container">
+    <button
+      type="button"
+      data-category=""
+      class="category-pill active whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-mono font-medium transition-all duration-200 cursor-pointer bg-blue-600 text-white shadow-xs"
+    >
+      {t('blog.allCategories')} ({totalPosts})
+    </button>
+    {
+      categories.map((cat) => (
+        <button
+          type="button"
+          data-category={cat.slug}
+          class="category-pill whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-mono font-medium transition-all duration-200 cursor-pointer bg-black/[0.04] dark:bg-white/[0.06] text-slate-600 dark:text-slate-300 hover:bg-black/10 dark:hover:bg-white/15"
+        >
+          {cat.name}
+          {cat.postCount !== undefined && <span class="opacity-60 ml-1">({cat.postCount})</span>}
+        </button>
+      ))
+    }
+  </div>
+</div>
+
+<script>
+  // Client-side instant filter orchestrator
+  function initBlogFilter() {
+    const searchInput = document.getElementById('blog-search-input') as HTMLInputElement | null;
+    const clearBtn = document.getElementById('blog-search-clear') as HTMLButtonElement | null;
+    const sortSelect = document.getElementById('blog-sort-select') as HTMLSelectElement | null;
+    const categoryButtons = document.querySelectorAll('.category-pill');
+    const cards = Array.from(document.querySelectorAll('.blog-card')) as HTMLElement[];
+    const emptyState = document.getElementById('blog-empty-state');
+    const cardsGrid = document.getElementById('blog-cards-grid');
+
+    let currentCategory = '';
+    let currentSearch = '';
+    let currentSort = 'latest';
+
+    function applyFilter() {
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const title = card.getAttribute('data-title') || '';
+        const excerpt = card.getAttribute('data-excerpt') || '';
+        const category = card.getAttribute('data-category') || '';
+        const tags = card.getAttribute('data-tags') || '';
+
+        const matchesCat = !currentCategory || category === currentCategory;
+        const matchesQuery =
+          !currentSearch ||
+          title.includes(currentSearch) ||
+          excerpt.includes(currentSearch) ||
+          tags.includes(currentSearch);
+
+        if (matchesCat && matchesQuery) {
+          card.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      // Show/hide empty state
+      if (emptyState) {
+        if (visibleCount === 0) {
+          emptyState.classList.remove('hidden');
+        } else {
+          emptyState.classList.add('hidden');
+        }
+      }
+    }
+
+    // Search events
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        currentSearch = searchInput.value.trim().toLowerCase();
+        if (clearBtn) {
+          if (currentSearch) {
+            clearBtn.classList.remove('hidden');
+          } else {
+            clearBtn.classList.add('hidden');
+          }
+        }
+        applyFilter();
+      });
+    }
+
+    if (clearBtn && searchInput) {
+      clearBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        currentSearch = '';
+        clearBtn.classList.add('hidden');
+        searchInput.focus();
+        applyFilter();
+      });
+    }
+
+    // Category button click
+    categoryButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        categoryButtons.forEach((b) => {
+          b.classList.remove('active', 'bg-blue-600', 'text-white', 'shadow-xs');
+          b.classList.add('bg-black/[0.04]', 'dark:bg-white/[0.06]', 'text-slate-600', 'dark:text-slate-300');
+        });
+
+        btn.classList.add('active', 'bg-blue-600', 'text-white', 'shadow-xs');
+        btn.classList.remove('bg-black/[0.04]', 'dark:bg-white/[0.06]', 'text-slate-600', 'dark:text-slate-300');
+
+        currentCategory = btn.getAttribute('data-category') || '';
+        applyFilter();
+      });
+    });
+
+    // Reset button inside empty state
+    const resetBtn = document.getElementById('reset-filters-btn');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        if (searchInput) {
+          searchInput.value = '';
+          currentSearch = '';
+        }
+        if (clearBtn) clearBtn.classList.add('hidden');
+        const firstCategoryBtn = categoryButtons[0] as HTMLButtonElement | undefined;
+        firstCategoryBtn?.click();
+      });
+    }
+  }
+
+  // Run on mount
+  initBlogFilter();
+</script>

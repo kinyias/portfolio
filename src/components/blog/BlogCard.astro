@@ -1,0 +1,101 @@
+---
+import type { BlogPost } from '../../utils/blogApi';
+import { useTranslations, useTranslatedPath, type Lang } from '../../i18n/utils';
+
+interface Props {
+  post: BlogPost;
+  lang: Lang;
+}
+
+const { post, lang } = Astro.props;
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+
+const postUrl = translatePath(`/blog/${post.slug}`);
+const formattedDate = post.publishedAt
+  ? new Intl.DateTimeFormat(lang === 'vi' ? 'vi-VN' : 'en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(new Date(post.publishedAt))
+  : null;
+---
+
+<article
+  class="blog-card group flex flex-col h-full rounded-2xl bg-white/70 dark:bg-[#111726]/70 backdrop-blur-md border border-black/5 dark:border-white/10 hover:border-blue-500/40 dark:hover:border-blue-400/40 shadow-xs hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 overflow-hidden"
+  data-category={post.category?.slug || ''}
+  data-tags={(post.tags || []).map((t) => t.slug).join(',')}
+  data-title={post.title.toLowerCase()}
+  data-excerpt={(post.excerpt || '').toLowerCase()}
+>
+  <!-- Card Image Thumbnail -->
+  <a href={postUrl} class="block relative aspect-[16/9] overflow-hidden bg-slate-900">
+    {
+      post.coverImage ? (
+        <img
+          src={post.coverImage}
+          alt={post.title}
+          loading="lazy"
+          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+      ) : (
+        <div class="w-full h-full bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 flex items-center justify-center p-6">
+          <span class="font-mono text-2xl font-black text-blue-400/40 tracking-wider">
+            {post.category?.name || 'TECH'}
+          </span>
+        </div>
+      )
+    }
+
+    <!-- Category Floating Pill -->
+    {
+      post.category && (
+        <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-mono font-medium tracking-wide bg-slate-900/80 text-white backdrop-blur-md border border-white/10 shadow-sm">
+          {post.category.name}
+        </span>
+      )
+    }
+
+    <!-- Reading Time Badge -->
+    <span class="absolute bottom-3 right-3 px-2 py-0.5 rounded-md text-[10px] font-mono font-medium bg-black/70 text-slate-300 backdrop-blur-md">
+      {post.readingTime} {t('blog.readTime')}
+    </span>
+  </a>
+
+  <!-- Card Body -->
+  <div class="p-5 sm:p-6 flex flex-col flex-1">
+    <!-- Meta Info Row -->
+    <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 font-mono mb-2.5">
+      {formattedDate && <span>{formattedDate}</span>}
+    </div>
+
+    <!-- Title -->
+    <h3 class="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white line-clamp-2 mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+      <a href={postUrl}>
+        {post.title}
+      </a>
+    </h3>
+
+    <!-- Excerpt -->
+    {
+      post.excerpt && (
+        <p class="text-sm text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed mb-4 flex-1">
+          {post.excerpt}
+        </p>
+      )
+    }
+
+    <!-- Tags Row -->
+    {
+      post.tags && post.tags.length > 0 && (
+        <div class="flex flex-wrap gap-1.5 pt-3 mt-auto border-t border-black/5 dark:border-white/5">
+          {post.tags.slice(0, 3).map((tag) => (
+            <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-black/[0.04] dark:bg-white/[0.04] text-slate-600 dark:text-slate-400 hover:text-blue-500 transition-colors">
+              #{tag.name}
+            </span>
+          ))}
+        </div>
+      )
+    }
+  </div>
+</article>
