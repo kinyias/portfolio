@@ -75,7 +75,10 @@ const quickPrompts = isVi
       },
     ];
 
-const initialTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+const initialTime = new Date().toLocaleTimeString("en-US", {
+  hour: "2-digit",
+  minute: "2-digit",
+});
 ---
 
 <div
@@ -319,9 +322,9 @@ const initialTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', mi
                   >✉️ Contact Email:</span
                 >
                 <a
-                  href="mailto:kinyias.dev@gmail.com"
+                  href="mailto:kinyias@gmail.com"
                   class="text-blue-600 dark:text-blue-400 hover:underline font-mono font-medium"
-                  >kinyias.dev@gmail.com</a
+                  >kinyias@gmail.com</a
                 >
               </div>
             </div>
@@ -572,8 +575,11 @@ const initialTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', mi
     if (rootEl.dataset.initialized === "true") return;
     rootEl.dataset.initialized = "true";
 
-    const currentNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    rootEl.querySelectorAll('.chat-initial-time').forEach((el) => {
+    const currentNow = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    rootEl.querySelectorAll(".chat-initial-time").forEach((el) => {
       el.textContent = currentNow;
     });
 

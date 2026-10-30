@@ -1,5 +1,5 @@
 import type { ImageMetadata } from 'astro';
-import nexusImg from '../assets/images/projects/nexus-os.jpg';
+import replyEaseImg from '../assets/images/projects/reply-ease-ai.png';
 import spatialImg from '../assets/images/projects/spatial-3d.jpg';
 import hyperflowImg from '../assets/images/projects/hyperflow.jpg';
 import aiAgentImg from '../assets/images/projects/ai-orchestrator.jpg';
@@ -27,34 +27,36 @@ export interface ProjectItem {
 
 export const projectsData: ProjectItem[] = [
   {
-    id: 'nexus-os',
+    id: 'reply-ease-ai',
     num: '01',
-    title: 'Nexus Studio OS',
-    category: 'Developer Platform',
+    title: 'ReplyEase AI',
+    category: 'Autonomous AI & SaaS Platform',
     year: '2026',
     tagline: {
-      en: 'High-Performance Cloud Developer Workspace & Graph Diagnostics',
-      vi: 'Môi trường lập trình đám mây hiệu năng cao & Chẩn đoán đồ thị'
+      en: 'Autonomous Sales, Booking & Real-Time Customer Support SaaS',
+      vi: 'Nền tảng AI Chăm sóc Khách hàng, Đặt lịch & Bán hàng Tự động'
     },
     description: {
-      en: 'An ultra-fast cloud IDE built with WebAssembly kernels and Monaco editor. Features visual node microservice topology, live code coverage diagnostics, and distributed build streaming.',
-      vi: 'Môi trường phát triển trên nền web tối ưu hóa bởi lõi WebAssembly và Monaco editor. Tích hợp trực quan hóa cấu trúc vi dịch vụ, chẩn đoán độ phủ mã nguồn và streaming tiến trình build.'
+      en: 'Production-ready full-stack AI SaaS integrating Google Gemini, multi-format RAG with Pinecone, real-time WebSockets, and embeddable widgets for 24/7 autonomous sales, lead qualification, and seamless human agent takeover.',
+      vi: 'Nền tảng SaaS kết hợp Google Gemini, hệ thống RAG đa định dạng với Pinecone, WebSockets thời gian thực và widget nhúng tự động hóa tư vấn bán hàng 24/7, sàng lọc khách hàng tiềm năng và chuyển giao tư vấn viên tức thì.'
     },
-    image: nexusImg,
-    tags: ['Next.js', 'Rust WASM', 'Monaco', 'TailwindCSS', 'WebSocket'],
-    metrics: '98.4% Code Coverage • Sub-5ms Terminal',
-    demoUrl: 'https://github.com/kinyias',
-    githubUrl: 'https://github.com/kinyias',
+    image: replyEaseImg,
+    tags: ['FastAPI', 'Next.js 16', 'Google Gemini', 'Pinecone RAG', 'WebSockets', 'PostgreSQL'],
+    metrics: 'Sub-second RAG • Real-time WebSockets',
+    demoUrl: 'https://reply-ease-ai.vercel.app/',
+    githubUrl: 'https://github.com/kinyias/reply-ease-ai',
     highlights: {
       en: [
-        'WASM-compiled language server protocol engine running client-side',
-        'Interactive real-time node topology map with dynamic SVG routing',
-        'Multi-pane terminal emulator with zero input latency'
+        'Autonomous sales & lead qualification engine powered by Google Gemini with multi-model failover',
+        'Multi-format RAG pipeline (PDF, Excel, TXT) with semantic chunking & domain-isolated Pinecone namespaces',
+        'Real-time bi-directional WebSocket chat with one-click seamless human agent takeover',
+        'Automated VietQR dynamic billing and SePay webhook payment reconciliation'
       ],
       vi: [
-        'Lõi Language Server Protocol biên dịch sang WASM chạy trực tiếp trên client',
-        'Sơ đồ topo vi dịch vụ tương tác thời gian thực với định tuyến đường nối SVG',
-        'Giả lập terminal đa màn hình với độ trễ nhập liệu gần như bằng không'
+        'Động cơ AI bán hàng & sàng lọc lead tự động với Google Gemini kèm cơ chế dự phòng đa mô hình',
+        'Pipeline RAG đa định dạng (PDF, Excel, TXT) với phân tách ngữ nghĩa và namespace Pinecone riêng biệt',
+        'Hệ thống chat WebSockets thời gian thực hai chiều hỗ trợ tiếp quản cuộc trò chuyện (Takeover) tức thì',
+        'Tự động tạo mã thanh toán VietQR động và xác thực giao dịch thời gian thực qua SePay webhook'
       ]
     }
   },

@@ -63,7 +63,10 @@ const quickPrompts = isVi
       },
     ];
 
-const initialTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+const initialTime = new Date().toLocaleTimeString("en-US", {
+  hour: "2-digit",
+  minute: "2-digit",
+});
 ---
 
 <div
@@ -206,8 +209,7 @@ const initialTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', mi
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
-              d="M15 3h6m0 0v6m0-6L14 10M9 21H3m0 0v-6m0 6l7-7"
-            ></path>
+              d="M15 3h6m0 0v6m0-6L14 10M9 21H3m0 0v-6m0 6l7-7"></path>
           </svg>
           <!-- Restore / Minimize Icon (Compress) -->
           <svg
@@ -220,8 +222,7 @@ const initialTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', mi
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
-              d="M4 14h6m0 0v6m0-6L3 21m17-11h-6m0 0V4m0 6l7-7"
-            ></path>
+              d="M4 14h6m0 0v6m0-6L3 21m17-11h-6m0 0V4m0 6l7-7"></path>
           </svg>
         </button>
 
@@ -277,7 +278,10 @@ const initialTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', mi
               }
             </p>
           </div>
-          <span class="widget-initial-time text-[10px] text-slate-400 font-mono ml-1">{initialTime}</span>
+          <span
+            class="widget-initial-time text-[10px] text-slate-400 font-mono ml-1"
+            >{initialTime}</span
+          >
         </div>
       </div>
 
@@ -377,14 +381,17 @@ const initialTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', mi
                   >✉️ Contact Email:
                 </span>
                 <a
-                  href="mailto:kinyias.dev@gmail.com"
+                  href="mailto:kinyias@gmail.com"
                   class="text-blue-600 dark:text-blue-400 hover:underline font-mono font-medium"
-                  >kinyias.dev@gmail.com</a
+                  >kinyias@gmail.com</a
                 >
               </div>
             </div>
           </div>
-          <span class="widget-initial-time text-[10px] text-slate-400 font-mono ml-1">{initialTime}</span>
+          <span
+            class="widget-initial-time text-[10px] text-slate-400 font-mono ml-1"
+            >{initialTime}</span
+          >
         </div>
       </div>
 
@@ -581,8 +588,11 @@ const initialTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', mi
     const avatarUrl = rootEl.getAttribute("data-avatar-url") || "/favicon.svg";
     const isViLang = rootEl.getAttribute("data-lang") === "vi";
 
-    const currentNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    rootEl.querySelectorAll('.widget-initial-time').forEach((el) => {
+    const currentNow = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    rootEl.querySelectorAll(".widget-initial-time").forEach((el) => {
       el.textContent = currentNow;
     });
 
@@ -797,8 +807,11 @@ const initialTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', mi
         isOpen = typeof open === "boolean" ? open : !isOpen;
 
         if (isOpen) {
-          const currentNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-          rootEl.querySelectorAll('.widget-initial-time').forEach((el) => {
+          const currentNow = new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          rootEl.querySelectorAll(".widget-initial-time").forEach((el) => {
             el.textContent = currentNow;
           });
 
