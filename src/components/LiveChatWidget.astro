@@ -2,6 +2,7 @@
 import { Image } from "astro:assets";
 import { useTranslations, type Lang } from "../i18n/utils";
 import avatarImg from "../assets/images/card-front.png";
+import { PROFILE_DATA } from "../data/profile";
 
 interface Props {
   lang: Lang;
@@ -18,50 +19,8 @@ const t = useTranslations(lang);
 const isVi = lang === "vi";
 
 const quickPrompts = isVi
-  ? [
-      {
-        id: "projects",
-        label: "🚀 Dự án nổi bật",
-        prompt: "Cho mình xem các dự án tiêu biểu của bạn",
-      },
-      {
-        id: "stack",
-        label: "🛠️ Tech Stack",
-        prompt: "Tech stack và công nghệ chính bạn sử dụng là gì?",
-      },
-      {
-        id: "contact",
-        label: "🤝 Hợp tác",
-        prompt: "Làm sao để liên hệ hợp tác làm dự án với bạn?",
-      },
-      {
-        id: "joke",
-        label: "😄 Chuyện cười dev",
-        prompt: "Kể cho mình nghe một mẩu chuyện cười lập trình",
-      },
-    ]
-  : [
-      {
-        id: "projects",
-        label: "🚀 Featured Works",
-        prompt: "Show me your signature projects and works",
-      },
-      {
-        id: "stack",
-        label: "🛠️ Tech Stack",
-        prompt: "What technologies and frameworks do you specialize in?",
-      },
-      {
-        id: "contact",
-        label: "🤝 Work Together",
-        prompt: "How can we work together or get in touch?",
-      },
-      {
-        id: "joke",
-        label: "😄 Dev Joke",
-        prompt: "Tell me a funny developer joke",
-      },
-    ];
+  ? PROFILE_DATA.quickPrompts.vi
+  : PROFILE_DATA.quickPrompts.en;
 
 const initialTime = new Date().toLocaleTimeString("en-US", {
   hour: "2-digit",
@@ -273,8 +232,8 @@ const initialTime = new Date().toLocaleTimeString("en-US", {
             <p>
               {
                 isVi
-                  ? "Xin chào bạn! 👋 Mình là trợ lý ảo của Thái Tín Khang (@kinyias). Chào mừng bạn đến với portfolio của mình!"
-                  : "Hello there! 👋 I am the virtual assistant for Thái Tín Khang (@kinyias). Welcome to my portfolio!"
+                  ? PROFILE_DATA.welcomeIntro.vi
+                  : PROFILE_DATA.welcomeIntro.en
               }
             </p>
           </div>
@@ -305,36 +264,52 @@ const initialTime = new Date().toLocaleTimeString("en-US", {
             <p class="font-semibold text-slate-900 dark:text-white">
               {
                 isVi
-                  ? "Thông tin hồ sơ năng lực của Thái Tín Khang:"
-                  : "Overview of Thái Tín Khang's profile & background:"
+                  ? PROFILE_DATA.overviewTitle.vi
+                  : PROFILE_DATA.overviewTitle.en
               }
             </p>
             <div
               class="space-y-1.5 pt-1 border-t border-black/5 dark:border-white/10"
             >
-              <div>
+              <div class="space-y-1 pt-0.5">
                 <span class="font-semibold text-blue-600 dark:text-blue-400"
-                  >🛠️ Tech Stack:
+                  >🛠️ {isVi ? "Kỹ năng chuyên môn:" : "Technical Skills:"}
                 </span>
-                <span class="text-slate-700 dark:text-slate-300"
-                  >TypeScript, Astro 7, Next.js, React, Tailwind CSS v4, GSAP 3
-                  (ScrollTrigger, Timelines), Three.js, Node.js</span
+                <div
+                  class="space-y-1 text-slate-700 dark:text-slate-300 text-xs pl-0.5 leading-relaxed"
                 >
+                  {
+                    PROFILE_DATA.skills.map((skill) => (
+                      <div>
+                        <strong class="text-slate-900 dark:text-white font-medium">
+                          {isVi ? skill.label.vi : skill.label.en}
+                        </strong>
+                        <span> {isVi ? skill.text.vi : skill.text.en}</span>
+                      </div>
+                    ))
+                  }
+                </div>
               </div>
-              <div>
+              <div class="space-y-0.5">
                 <span class="font-semibold text-blue-600 dark:text-blue-400"
                   >💼 Work Experience:
                 </span>
-                <span class="text-slate-700 dark:text-slate-300">
-                  <strong class="text-slate-900 dark:text-white font-medium"
-                    >2023 – {isVi ? "Hiện tại" : "Present"}:</strong
-                  >
+                <div class="text-slate-700 dark:text-slate-300 space-y-0.5 text-xs">
                   {
-                    isVi
-                      ? "Software Developer & Tech Content Creator"
-                      : "Software Developer & Tech Content Creator"
+                    PROFILE_DATA.experience.map((exp) => (
+                      <div>
+                        <strong class="text-slate-900 dark:text-white font-medium">
+                          {isVi ? exp.period.vi : exp.period.en}:
+                        </strong>
+                        <span>
+                          {" "}
+                          {isVi ? exp.role.vi : exp.role.en} (
+                          {isVi ? exp.description.vi : exp.description.en})
+                        </span>
+                      </div>
+                    ))
                   }
-                </span>
+                </div>
               </div>
               <div>
                 <span class="font-semibold text-blue-600 dark:text-blue-400"
@@ -342,48 +317,59 @@ const initialTime = new Date().toLocaleTimeString("en-US", {
                 </span>
                 <span class="text-slate-700 dark:text-slate-300">
                   <strong class="text-slate-900 dark:text-white font-medium"
-                    >2020 – 2024:</strong
+                    >{PROFILE_DATA.education.period}:</strong
                   >
+                  {" "}
                   {
                     isVi
-                      ? "Cử nhân Công nghệ Thông tin / Kỹ thuật Phần mềm"
-                      : "B.S. in Information Technology / Software Engineering"
+                      ? PROFILE_DATA.education.formatted.vi
+                      : PROFILE_DATA.education.formatted.en
                   }
                 </span>
               </div>
-              <div>
+              <div class="pt-0.5 space-y-1.5">
                 <span class="font-semibold text-blue-600 dark:text-blue-400"
-                  >📜 Certificate:
+                  >📜 {isVi ? "Chứng chỉ Google:" : "Google Certifications:"}
                 </span>
-                <span
-                  class="text-slate-700 dark:text-slate-300 inline-flex flex-wrap items-center gap-1"
-                >
-                  <span
-                    >{
-                      isVi
-                        ? "Chứng chỉ Kỹ thuật Lập trình Web & Frontend Architecture (2024)"
-                        : "Modern Web Engineering & Frontend Architecture (2024)"
-                    }</span
-                  >
-                  <a
-                    href="https://linkedin.com/in/kinyias/details/certifications/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[10px] font-mono font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 transition-all"
-                  >
-                    <span>✓ {isVi ? "Xác thực" : "Verify"}</span>
-                    <span>↗</span>
-                  </a>
-                </span>
+                <div class="space-y-1.5 pl-0.5">
+                  {
+                    PROFILE_DATA.certificates.map((cert) => (
+                      <div class="p-2 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/5 flex items-center justify-between gap-1.5 transition-colors hover:border-blue-500/30">
+                        <div class="min-w-0 flex-1">
+                          <p class="font-medium text-slate-900 dark:text-white text-xs truncate">
+                            {cert.shortTitle}
+                          </p>
+                          <p class="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
+                            {cert.issueDate} • ID: {cert.credentialId}
+                          </p>
+                        </div>
+                        <a
+                          href={cert.verifyUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 transition-all shrink-0"
+                          title={
+                            isVi
+                              ? `Xác thực chứng chỉ Coursera: ${cert.credentialId}`
+                              : `Verify credential: ${cert.credentialId}`
+                          }
+                        >
+                          <span>✓ {isVi ? "Xác thực" : "Verify"}</span>
+                          <span>↗</span>
+                        </a>
+                      </div>
+                    ))
+                  }
+                </div>
               </div>
               <div>
                 <span class="font-semibold text-blue-600 dark:text-blue-400"
                   >✉️ Contact Email:
                 </span>
                 <a
-                  href="mailto:kinyias@gmail.com"
+                  href={`mailto:${PROFILE_DATA.email}`}
                   class="text-blue-600 dark:text-blue-400 hover:underline font-mono font-medium"
-                  >kinyias@gmail.com</a
+                  >{PROFILE_DATA.email}</a
                 >
               </div>
             </div>

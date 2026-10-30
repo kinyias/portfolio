@@ -2,6 +2,7 @@
 import { Image } from "astro:assets";
 import { useTranslations, useTranslatedPath, type Lang } from "../i18n/utils";
 import avatarImg from "../assets/images/card-front.png";
+import { PROFILE_DATA } from "../data/profile";
 
 interface Props {
   lang: Lang;
@@ -18,62 +19,10 @@ const translatePath = useTranslatedPath(lang);
 
 const isVi = lang === "vi";
 
-// Quick prompt suggestions
+// Quick prompt suggestions from centralized PROFILE_DATA
 const quickPrompts = isVi
-  ? [
-      {
-        id: "projects",
-        label: "🚀 Dự án nổi bật",
-        prompt: "Cho mình xem các dự án tiêu biểu của bạn",
-      },
-      {
-        id: "stack",
-        label: "🛠️ Kỹ nghệ & Tech Stack",
-        prompt: "Tech stack và công nghệ chính bạn sử dụng là gì?",
-      },
-      {
-        id: "contact",
-        label: "🤝 Hợp tác & Liên hệ",
-        prompt: "Làm sao để liên hệ hợp tác làm dự án với bạn?",
-      },
-      {
-        id: "performance",
-        label: "⚡ Tối ưu hiệu năng GSAP",
-        prompt: "Bạn tối ưu animation GSAP và 60fps như thế nào?",
-      },
-      {
-        id: "joke",
-        label: "😄 Kể chuyện cười dev",
-        prompt: "Kể cho mình nghe một mẩu chuyện cười lập trình",
-      },
-    ]
-  : [
-      {
-        id: "projects",
-        label: "🚀 Featured Projects",
-        prompt: "Show me your signature projects and works",
-      },
-      {
-        id: "stack",
-        label: "🛠️ Core Tech Stack",
-        prompt: "What technologies and frameworks do you specialize in?",
-      },
-      {
-        id: "contact",
-        label: "🤝 Collaboration & Hire",
-        prompt: "How can we work together or get in touch?",
-      },
-      {
-        id: "performance",
-        label: "⚡ 60FPS GSAP Secrets",
-        prompt: "How do you optimize GSAP animations for ultra performance?",
-      },
-      {
-        id: "joke",
-        label: "😄 Tell a Dev Joke",
-        prompt: "Tell me a funny developer joke",
-      },
-    ];
+  ? PROFILE_DATA.quickPrompts.vi
+  : PROFILE_DATA.quickPrompts.en;
 
 const initialTime = new Date().toLocaleTimeString("en-US", {
   hour: "2-digit",
@@ -199,8 +148,8 @@ const initialTime = new Date().toLocaleTimeString("en-US", {
             <p>
               {
                 isVi
-                  ? "Xin chào bạn! 👋 Mình là trợ lý ảo của Thái Tín Khang (@kinyias). Chào mừng bạn đến với portfolio của mình!"
-                  : "Hello there! 👋 I am the virtual assistant for Thái Tín Khang (@kinyias). Welcome to my portfolio!"
+                  ? PROFILE_DATA.welcomeIntro.vi
+                  : PROFILE_DATA.welcomeIntro.en
               }
             </p>
           </div>
@@ -231,42 +180,60 @@ const initialTime = new Date().toLocaleTimeString("en-US", {
             <p class="font-semibold text-slate-900 dark:text-white">
               {
                 isVi
-                  ? "Thông tin hồ sơ năng lực của Thái Tín Khang:"
-                  : "Overview of Thái Tín Khang's profile & background:"
+                  ? PROFILE_DATA.overviewTitle.vi
+                  : PROFILE_DATA.overviewTitle.en
               }
             </p>
             <div
               class="space-y-2 text-xs sm:text-sm pt-1 border-t border-black/5 dark:border-white/10"
             >
               <div
-                class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2"
+                class="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-2"
               >
                 <span
-                  class="font-semibold text-blue-600 dark:text-blue-400 min-w-[130px] flex-shrink-0"
-                  >🛠️ Tech Stack:</span
+                  class="font-semibold text-blue-600 dark:text-blue-400 min-w-[130px] flex-shrink-0 pt-0.5"
+                  >🛠️ {isVi ? "Kỹ năng chuyên môn:" : "Technical Skills:"}</span
                 >
-                <span class="text-slate-700 dark:text-slate-300"
-                  >TypeScript, JavaScript, Astro 7, Next.js, React, Tailwind CSS
-                  v4, GSAP 3 (ScrollTrigger, Timelines), Three.js, Node.js</span
+                <div
+                  class="space-y-1.5 text-slate-700 dark:text-slate-300 flex-1 leading-relaxed text-xs sm:text-sm"
                 >
+                  {
+                    PROFILE_DATA.skills.map((skill) => (
+                      <div>
+                        <strong class="text-slate-900 dark:text-white font-medium">
+                          {isVi ? skill.label.vi : skill.label.en}
+                        </strong>
+                        <span> {isVi ? skill.text.vi : skill.text.en}</span>
+                      </div>
+                    ))
+                  }
+                </div>
               </div>
               <div
-                class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2"
+                class="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-2"
               >
                 <span
-                  class="font-semibold text-blue-600 dark:text-blue-400 min-w-[130px] flex-shrink-0"
+                  class="font-semibold text-blue-600 dark:text-blue-400 min-w-[130px] flex-shrink-0 pt-0.5"
                   >💼 Work Experience:</span
                 >
-                <span class="text-slate-700 dark:text-slate-300">
-                  <strong class="text-slate-900 dark:text-white font-medium"
-                    >2023 – {isVi ? "Hiện tại" : "Present"}:</strong
-                  >
+                <div
+                  class="space-y-1 text-slate-700 dark:text-slate-300 flex-1"
+                >
                   {
-                    isVi
-                      ? "Software Developer & Tech Content Creator (Chuyên sâu phát triển web hiện đại & kiến trúc hiệu năng cao)"
-                      : "Software Developer & Tech Content Creator (Specialized in modern web engineering & high-performance UI)"
+                    PROFILE_DATA.experience.map((exp) => (
+                      <div>
+                        <strong class="text-slate-900 dark:text-white font-medium">
+                          {isVi ? exp.period.vi : exp.period.en}:
+                        </strong>
+                        <span>
+                          {" "}
+                          {isVi ? exp.role.vi : exp.role.en} (
+                          {isVi ? exp.description.vi : exp.description.en})
+                        </span>
+                      </div>
+                    ))
                   }
-                </span>
+                </div>
               </div>
               <div
                 class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2"
@@ -277,42 +244,58 @@ const initialTime = new Date().toLocaleTimeString("en-US", {
                 >
                 <span class="text-slate-700 dark:text-slate-300">
                   <strong class="text-slate-900 dark:text-white font-medium"
-                    >2020 – 2024:</strong
+                    >{PROFILE_DATA.education.period}:</strong
                   >
+                  {" "}
                   {
                     isVi
-                      ? "Cử nhân Công nghệ Thông tin / Kỹ thuật Phần mềm"
-                      : "B.S. in Information Technology / Software Engineering"
+                      ? PROFILE_DATA.education.formatted.vi
+                      : PROFILE_DATA.education.formatted.en
                   }
                 </span>
               </div>
               <div
-                class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2"
+                class="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-2 pt-0.5"
               >
                 <span
-                  class="font-semibold text-blue-600 dark:text-blue-400 min-w-[130px] flex-shrink-0"
-                  >📜 Certificate:</span
+                  class="font-semibold text-blue-600 dark:text-blue-400 min-w-[130px] flex-shrink-0 pt-1"
+                  >📜 {isVi ? "Chứng chỉ Google:" : "Certifications:"}</span
                 >
-                <span
-                  class="text-slate-700 dark:text-slate-300 inline-flex flex-wrap items-center gap-1.5"
-                >
-                  <span
-                    >{
-                      isVi
-                        ? "Chứng chỉ Kỹ thuật Lập trình Web & Frontend Architecture (2024)"
-                        : "Modern Web Engineering & Frontend Architecture (2024)"
-                    }</span
-                  >
-                  <a
-                    href="https://linkedin.com/in/kinyias/details/certifications/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 transition-all shadow-2xs"
-                  >
-                    <span>✓ {isVi ? "Xác thực" : "Verify"}</span>
-                    <span>↗</span>
-                  </a>
-                </span>
+                <div class="space-y-2 flex-1 w-full">
+                  {
+                    PROFILE_DATA.certificates.map((cert) => (
+                      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/5 transition-colors hover:border-blue-500/30">
+                        <div class="min-w-0 flex-1">
+                          <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="font-medium text-slate-900 dark:text-white text-xs sm:text-sm">
+                              {cert.shortTitle}
+                            </span>
+                            <span class="px-1.5 py-0.2 rounded text-[10px] font-mono font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                              {cert.issueDate}
+                            </span>
+                          </div>
+                          <p class="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
+                            ID: {cert.credentialId} • {cert.issuer}
+                          </p>
+                        </div>
+                        <a
+                          href={cert.verifyUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-mono font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 transition-all shadow-2xs self-start sm:self-auto shrink-0"
+                          title={
+                            isVi
+                              ? `Xác thực chứng chỉ Coursera: ${cert.credentialId}`
+                              : `Verify credential: ${cert.credentialId}`
+                          }
+                        >
+                          <span>✓ {isVi ? "Xác thực" : "Verify"}</span>
+                          <span>↗</span>
+                        </a>
+                      </div>
+                    ))
+                  }
+                </div>
               </div>
               <div
                 class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2"
@@ -322,9 +305,9 @@ const initialTime = new Date().toLocaleTimeString("en-US", {
                   >✉️ Contact Email:</span
                 >
                 <a
-                  href="mailto:kinyias@gmail.com"
+                  href={`mailto:${PROFILE_DATA.email}`}
                   class="text-blue-600 dark:text-blue-400 hover:underline font-mono font-medium"
-                  >kinyias@gmail.com</a
+                  >{PROFILE_DATA.email}</a
                 >
               </div>
             </div>
